@@ -110,7 +110,7 @@
           color="primary"
           @click="update"
         >
-          <span v-if="!isUpdating">Update Memberships</span>
+          <span v-if="!isUpdating">Update Memberships{{ hasUpdatedSincePageLoad ? ' Again' : '' }}</span>
           <span v-if="isUpdating">
             <SpinnerWithinButton /> Updating...
           </span>
@@ -135,6 +135,7 @@ export default {
   mixins: [CanvasUtils, MailingList, Context, Utils],
   data: () => ({
     isUpdating: false,
+    hasUpdatedSincePageLoad: false,
     message: undefined,
     messageType: undefined
   }),
@@ -189,7 +190,10 @@ export default {
           this.message = error
           this.messageType = 'warning'
         }
-      ).then(() => this.isUpdating = false)
+      ).then(() => {
+        this.isUpdating = false
+        this.hasUpdatedSincePageLoad = true
+      })
     }
   }
 }

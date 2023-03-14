@@ -237,10 +237,10 @@ class MailingList(Base):
                             summary['add']['total'] += 1
                             app.logger.debug(f'Reactivating previously deleted address {preferred_email}')
                             success = MailingListMembers.update(
-                                can_send=user['can_send'],
+                                can_send=user['canSend'],
                                 deleted_at=None,
-                                first_name=user['first_name'],
-                                last_name=user['last_name'],
+                                first_name=user['firstName'],
+                                last_name=user['lastName'],
                                 mailing_list_member_id=existing_member.id,
                             )
                             key = 'successes' if success else 'errors'
@@ -253,10 +253,10 @@ class MailingList(Base):
                                 summary['update']['total'] += 1
                                 app.logger.debug(f'Updating user {preferred_email} of mailing_list {mailing_list.id}')
                                 success = MailingListMembers.update(
-                                    can_send=user['can_send'],
-                                    deleted_at=user['deleted_at'],
-                                    first_name=user['first_name'],
-                                    last_name=user['last_name'],
+                                    can_send=user['canSend'],
+                                    deleted_at=user['deletedAt'],
+                                    first_name=user['firstName'],
+                                    last_name=user['lastName'],
                                     mailing_list_member_id=existing_member.id,
                                 )
                                 key = 'successes' if success else 'errors'
@@ -285,7 +285,7 @@ class MailingList(Base):
             if mailing_list_member:
                 MailingListMembers.delete(mailing_list_member.id)
             key = 'successes' if mailing_list_member else 'errors'
-            summary['remove'][key] += 1
+            summary['remove'][key].append(email_address)
 
         members = MailingListMembers.get_mailing_list_members(mailing_list_id=mailing_list.id)
         cls.update_population_metadata(
