@@ -160,8 +160,8 @@ def fake_loch(app):
     with open(f'{fixture_path}/loch/loch.sql', 'r') as ddlfile:
         ddltext = ddlfile.read()
     data_loch_db = create_engine(app.config['DATA_LOCH_RDS_URI'])
-    with data_loch_db.connect():
-        data_loch_db.execute(text(ddltext))
+    with data_loch_db.connect() as connection:
+        connection.execute(text(ddltext))
 
 
 @pytest.fixture(scope='session', autouse=True)
