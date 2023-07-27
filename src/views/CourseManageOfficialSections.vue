@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas-application page-course-official-sections">
+  <div v-if="!isLoading" class="canvas-application page-course-official-sections">
     <div v-if="feedFetched && !displayError">
       <div v-if="currentWorkflowStep === 'staging'">
         <MaintenanceNotice course-action-verb="site is updated" />
@@ -245,8 +245,9 @@ export default {
     showAlert: false
   }),
   created() {
-    this.fetchFeed()
-    this.$ready()
+    this.fetchFeed().then(() => {
+      this.$ready()
+    })
   },
   watch: {
     jobStatusMessage(msg) {
@@ -299,7 +300,7 @@ export default {
       this.currentWorkflowStep = step
     },
     fetchFeed() {
-      getCourseSections(this.currentUser.canvasSiteId).then(
+      return getCourseSections(this.currentUser.canvasSiteId).then(
         response => {
           this.jobProgress = null
           if (response.canvasSite) {
