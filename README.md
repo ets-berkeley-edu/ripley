@@ -6,7 +6,7 @@ Ripley heroically supports UC Berkeley's Canvas LMS instance.
 
 ## Installation
 
-* Install Python 3.9
+* Install Python 3
 * Create your virtual environment (venv)
 * Install dependencies
 
@@ -72,7 +72,6 @@ REDIS_USE_FAKE_CLIENT = False
 
 Listen on the queue for jobs, with Redis.
 
-
 ![Close-up image of the Xenomorph from the movie Alien.](src/assets/images/xenomorph.png)
 
 On macOS 10.13 and later, disable the fork() crash behavior (see https://github.com/rq/rq/issues/1418):
@@ -92,7 +91,7 @@ Start the worker:
 We use [Tox](https://tox.readthedocs.io) for continuous integration. Under the hood, you'll find [PyTest](https://docs.pytest.org), [Flake8](http://flake8.pycqa.org) and [ESLint](https://eslint.org/). Please install NPM dependencies (see above) before running tests.
 
 ```
-# Run all tests and linters with Tox's parallel mode:
+# Run tests and linters in parallel:
 tox -p
 
 # Pytest

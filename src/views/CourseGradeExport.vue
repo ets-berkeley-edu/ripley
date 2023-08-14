@@ -143,7 +143,6 @@
       </v-row>
       <v-row v-if="officialSections.length > 1" no-gutters>
         <v-col md="5">
-          {{ selectedSection }}
           <select
             id="course-sections"
             v-model="selectedSection"
@@ -354,6 +353,12 @@ export default {
   methods: {
     downloadGrades() {
       const pnpCutoff = this.enablePnpConversion === 'false' ? 'ignore' : encodeURIComponent(this.selectedPnpCutoffGrade)
+      console.log(`downloadGrades:
+        selectedType: ${this.selectedType}
+        selectedSection.id: ${this.selectedSection.id}
+        selectedSection.termId: ${this.selectedSection.termId}
+        pnpCutoff: ${pnpCutoff}
+      `)
       downloadGradeCsv(
         this.selectedType,
         this.selectedSection.id,
@@ -421,8 +426,14 @@ export default {
       this.appState = 'loading'
       this.jobStatus = 'New'
       iframeScrollToTop()
+      console.log(`preloadGrades:
+        selectedType: ${type}
+      `)
       prepareGradesCacheJob(this.currentUser.canvasSiteId).then(
         data => {
+          console.log(`post-prepareGradesCacheJob:
+            data: ${data}
+          `)
           if (data.jobRequestStatus === 'Success') {
             this.backgroundJobId = data.jobId
             this.startExportJob()
@@ -445,9 +456,16 @@ export default {
       this.showRetryOption = false
     },
     startExportJob() {
+      console.log(`startExportJob:
+        currentUser.canvasSiteId: ${this.currentUser.canvasSiteId, this.backgroundJobId}
+        backgroundJobId: ${this.backgroundJobId}
+      `)
       this.exportTimer = setInterval(() => {
         getExportJobStatus(this.currentUser.canvasSiteId, this.backgroundJobId).then(
           data => {
+            console.log(`post-getExportJobStatus:
+              data: ${data}
+            `)
             this.jobStatus = data.jobStatus
             this.percentCompleteRounded = Math.round(data.percentComplete * 100)
             if (this.jobStatus !== 'New' && this.jobStatus !== 'Processing') {

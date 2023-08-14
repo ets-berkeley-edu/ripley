@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex">
-    <div v-if="!omitIcon" class="pr-1">
+    <div class="pr-1">
       <v-icon icon="mdi-chevron-left" />
     </div>
     <div>

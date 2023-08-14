@@ -30,6 +30,7 @@ from flask_login import current_user, login_required
 from ripley.api.errors import BadRequestError, InternalServerError, ResourceNotFoundError
 from ripley.api.util import canvas_role_required, csv_download_response
 from ripley.externals import canvas, data_loch
+from ripley.externals.data_loch import get_basic_profile_and_grades_per_enrollments
 from ripley.externals.redis import enqueue, get_job
 from ripley.lib.berkeley_course import course_to_api_json, section_to_api_json, sort_course_sections
 from ripley.lib.berkeley_term import BerkeleyTerm
@@ -218,37 +219,29 @@ def egrade_export_download():
     if pnp_cutoff not in letter_grades and pnp_cutoff != 'ignore':
         raise BadRequestError(f'Invalid pnpCutoff value: {pnp_cutoff}')
 
-    # TODO: Translate legacy Ruby code
-    # # Campus Solutions expects Windows-style line endings.
-    # csv_string = CSV.generate(row_sep: "\r\n") do |csv|
-    #   csv << ['ID', 'Name', 'Grade', 'Grading Basis', 'Comments']
-    #   official_student_grades(term_cd, term_yr, ccn).each do |student|
-    #     grade = convert_to_basis(student["#{type}_grade".to_sym].to_s, student[:override_grade], student[:grading_basis], pnp_cutoff)
-    #     basis = student[:grading_basis] || ''
-    #     comment = case student[:grading_basis]
-    #       when 'CPN', 'DPN', 'EPN', 'PNP' then 'P/NP grade'
-    #       when 'ESU', 'SUS' then 'S/U grade'
-    #       when 'CNC' then 'C/NC grade'
-    #       else ''
-    #     end
-    #     csv << [student[:student_id], student[:name], grade, basis, comment]
-    #   end
-    # end
-    # # Prepend a space so that Excel does not tragically misinterpret the opening 'ID' column as a SYLK header.
-    # csv_string.prepend ' '
-
-    # term_season = {
-    #   'B' => 'Spring',
-    #   'C' => 'Summer',
-    #   'D' => 'Fall'
-    # }[params['term_cd']]
-    # respond_to do |format|
-    #   format.csv {
-    #     render csv: official_student_grades.to_s,
-    #     filename: "egrades-#{params['type']}-#{params['ccn']}-#{term_season}-#{params['term_yr']}-#{canvas_course_id}"
-    #   }
-    # end
-    return csv_download_response([])
+    rows = []
+    for row in get_basic_profile_and_grades_per_enrollments(term_id=term_id, section_ids=[section_id]):
+        grading_basis = (row['grading_basis'] or '').upper()
+        comment = None
+        if grading_basis in ['CPN', 'DPN', 'EPN', 'PNP']:
+            comment = 'P/NP grade'
+        elif grading_basis in ['ESU', 'SUS']:
+            comment = 'S/U grade'
+        elif grading_basis == 'CNC':
+            comment = 'C/NC grade'
+        rows.append({
+            'ID': row['sid'],
+            'Name': row['name'],
+            'Grade': row['grade'],
+            'Grading Basis': grading_basis,
+            'Comments': comment or '',
+        })
+    term = BerkeleyTerm.from_sis_term_id(term_id)
+    return csv_download_response(
+        rows=rows,
+        filename=f'egrades-{grade_type}-{section_id}-#{term.season}-{term.year}-{current_user.canvas_site_id}.csv',
+        fieldnames=['ID', 'Name', 'Grade', 'Grading Basis', 'Comments'],
+    )
 
 
 @app.route('/api/canvas_site/egrade_export/status', methods=['POST'])

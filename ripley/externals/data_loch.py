@@ -224,6 +224,26 @@ def get_grades_with_demographics(term_id, section_ids):
     return safe_execute_rds(sql, **params)
 
 
+def get_basic_profile_and_grades_per_enrollments(term_id, section_ids):
+    params = {
+        'section_ids': section_ids,
+        'term_id': term_id,
+    }
+    sql = """
+        SELECT
+            DISTINCT enr1.grade, enr2.ldap_uid, sec.sis_course_name, enr1.grading_basis, u.sid, u.first_name || ' ' || u.last_name AS name
+        FROM sis_data.edo_enrollments enr1
+        JOIN sis_data.edo_enrollments enr2
+            ON enr1.ldap_uid = enr2.ldap_uid
+            AND enr1.sis_term_id = %(term_id)s AND enr1.sis_section_id = ANY(%(section_ids)s)
+            AND enr2.sis_term_id < %(term_id)s AND enr2.grade IS NOT NULL AND enr2.grade != ''
+        JOIN sis_data.edo_sections sec
+            ON enr2.sis_term_id = sec.sis_term_id AND enr2.sis_section_id = sec.sis_section_id
+        JOIN sis_data.basic_attributes u ON u.ldap_uid = enr2.ldap_uid
+        ORDER BY sis_course_name"""
+    return safe_execute_rds(sql, **params)
+
+
 def get_grades_with_enrollments(term_id, section_ids):
     params = {
         'section_ids': section_ids,
