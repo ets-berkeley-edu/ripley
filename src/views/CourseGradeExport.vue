@@ -36,17 +36,10 @@
           <div class="pb-4 pl-5 pt-2">
             <span v-if="!noGradingStandardEnabled">
               You have already set a grading scheme.
-              You can view your grading scheme or select an alternate grading scheme in
-              <a id="canvas-course-settings-href" :href="`${config.canvasApiUrl}/courses/${currentUser.canvasSiteId}/settings#tab-details`">
-                Course Settings
-              </a>
+              You can view your grading scheme or select an alternate grading scheme in <CanvasCourseSettingsLink />.
             </span>
             <span v-if="noGradingStandardEnabled">
-              Set a grading scheme in
-              <a id="canvas-course-settings-href" :href="`${config.canvasApiUrl}/courses/${currentUser.canvasSiteId}/settings#tab-details`">
-                Course Settings
-              </a>
-              and return once completed.
+              Set a grading scheme in <CanvasCourseSettingsLink /> and return once completed.
             </span>
             <div class="pt-1">
               For detailed instructions, see:
@@ -291,6 +284,7 @@
 
 <script>
 import BackToGradebook from '@/components/bcourses/egrades/BackToGradebook.vue'
+import CanvasCourseSettingsLink from '@/components/bcourses/shared/CanvasCourseSettingsLink.vue'
 import Context from '@/mixins/Context'
 import OutboundLink from '@/components/utils/OutboundLink'
 import {downloadGradeCsv, getExportJobStatus, getExportOptions, prepareGradesCacheJob} from '@/api/egrades-export'
@@ -298,7 +292,7 @@ import {getTermName, iframeParentLocation, iframeScrollToTop, putFocusNextTick} 
 
 export default {
   name: 'CourseGradeExport',
-  components: {BackToGradebook, OutboundLink},
+  components: {BackToGradebook, CanvasCourseSettingsLink, OutboundLink},
   mixins: [Context],
   data: () => ({
     appState: null,
