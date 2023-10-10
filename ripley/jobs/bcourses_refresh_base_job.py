@@ -256,6 +256,10 @@ class BcoursesRefreshBaseJob(BaseJob):
             if is_inactive:
                 app.logger.warning(f'Reactivating account for LDAP UID {uid}.')
             new_row = csv_row_for_campus_user(campus_user)
+        # For an incremental job, not having user data in users_by_uid simply means they're not part of the update.
+        elif self.job_flags.incremental:
+            return
+        # If not an incremental job, a missing user is a candidate for inactivation.
         else:
             new_row = self.inactivate_user(uid, row, is_inactive, whitelisted_uids)
 

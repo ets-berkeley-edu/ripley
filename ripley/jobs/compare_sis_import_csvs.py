@@ -23,7 +23,7 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 import re
 import tempfile
 
@@ -109,7 +109,7 @@ def _collect_csv_keys(days_ago): # noqa C901
     junction_csvs = {k: [] for k in csv_keys}
     ripley_csvs = {k: [] for k in csv_keys}
 
-    datestamp = (datetime.now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
+    datestamp = (utc_now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
 
     for key in s3.get_keys_with_prefix(f'provisioned-users-{datestamp}', app.config['JUNCTION_COMPARISON_CSV_BUCKET']):
         junction_csvs['users-initial'].append(key)
