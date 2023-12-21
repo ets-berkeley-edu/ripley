@@ -262,6 +262,7 @@ export default {
       }
     },
     isDemoMode() {
+      this.setChartTitle()
       this.setLegendLabel()
       this.setTooltipFormatter()
     },
