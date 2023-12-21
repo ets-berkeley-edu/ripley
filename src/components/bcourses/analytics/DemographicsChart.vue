@@ -177,7 +177,8 @@ export default {
   computed: {
     selectedDemographicLabel() {
       const group = get(this.selectedDemographic, 'group')
-      return `${get(this.demographicOptions, group)['label']}`
+      const option = get(this.demographicOptions, group)
+      return get(option, 'label')
     }
   },
   watch: {
