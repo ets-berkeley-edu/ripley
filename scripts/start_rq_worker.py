@@ -27,7 +27,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 from scriptpath import scriptify
 
 
-@scriptify.in_app
+@scriptify.in_app(logging_location='xenomorph.log')
 def main(app):
     from ripley.lib.xenomorph import start_xenomorph_loop
     with app.app_context():

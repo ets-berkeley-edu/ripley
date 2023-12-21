@@ -39,11 +39,11 @@ background_job_manager = BackgroundJobManager()
 q = None
 
 
-def create_app(routes=True, jobs=True):
+def create_app(routes=True, jobs=True, logging_location=None):
     """Initialize Ripley."""
     app = Flask(__name__.split('.')[0])
     load_configs(app)
-    initialize_logger(app)
+    initialize_logger(app, logging_location)
     cache.init_app(app, config={'CACHE_REDIS_URL': get_url(app)})
     cache.clear()
     db.init_app(app)

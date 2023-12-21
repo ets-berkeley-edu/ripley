@@ -18,7 +18,7 @@ cd $app_dir
 export RIPLEY_ENV=${RIPLEY_ENV}
 export RIPLEY_LOCAL_CONFIGS="$PWD/config"
 
-LOG=`date +"$PWD/ripley.log"`
+LOG=`date +"$PWD/xenomorph.log"`
 LOGIT="tee -a $LOG"
 
 echo | $LOGIT

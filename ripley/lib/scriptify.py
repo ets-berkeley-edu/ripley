@@ -31,15 +31,17 @@ from ripley.factory import create_app
 """Execute script functions in an app context."""
 
 
-def in_app(func):
-    @wraps(func)
-    def _in_app_func(*args, **kw):
-        app = create_app(routes=False, jobs=False)
-        ac = app.app_context()
-        try:
-            ac.push()
-            kw['app'] = app
-            func(*args, **kw)
-        finally:
-            ac.pop()
-    return _in_app_func
+def in_app(logging_location=None):
+    def _in_app_decorator(func):
+        @wraps(func)
+        def _in_app_func(*args, **kw):
+            app = create_app(routes=False, jobs=False, logging_location=logging_location)
+            ac = app.app_context()
+            try:
+                ac.push()
+                kw['app'] = app
+                func(*args, **kw)
+            finally:
+                ac.pop()
+        return _in_app_func
+    return _in_app_decorator

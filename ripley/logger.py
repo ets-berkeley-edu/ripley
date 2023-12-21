@@ -26,11 +26,12 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 
-def initialize_logger(app):
+def initialize_logger(app, location=None):
     from werkzeug.serving import WSGIRequestHandler
 
     level = app.config['LOGGING_LEVEL']
-    location = app.config['LOGGING_LOCATION']
+    if not location:
+        location = app.config['LOGGING_LOCATION']
     log_propagation_level = app.config['LOGGING_PROPAGATION_LEVEL']
 
     # Configure the root logger and library loggers as desired.
