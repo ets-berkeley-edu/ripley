@@ -421,7 +421,6 @@ export default {
         this.currentAdminTerm = semester.slug
         this.selectedSectionsList = []
         this.updateSelected()
-        this.alertScreenReader(`Switched to ${semester.name} for Section ID input`)
       }
     },
     switchSemester(slug) {
