@@ -1,23 +1,24 @@
+dist: focal
 sudo: required
 language: python
 python: "3.9"
 
+services:
+  - postgresql
+  - redis-server
+
 before_install:
   - cd ${TRAVIS_BUILD_DIR}
-  - nvm install 16
+  - nvm install 18
 
 install:
   - npm install
   - pip3 install tox
 
 script:
-  - psql -c 'create database nostromo_test;' -U postgres
-  - psql -c 'create database ripley_loch_test;' -U postgres
-  - psql nostromo_test -c 'create role ripley superuser login; alter schema public owner to ripley;' -U postgres
-  - psql ripley_loch_test -c 'alter schema public owner to ripley;' -U postgres
+  - psql -c 'create database nostromo_test;' -U postgres -p 5433
+  - psql -c 'create database ripley_loch_test;' -U postgres -p 5433
+  - psql nostromo_test -c 'create role ripley superuser login; alter schema public owner to ripley;' -U postgres -p 5433
+  - psql ripley_loch_test -c 'alter schema public owner to ripley;' -U postgres -p 5433
   - pip3 install -r requirements.txt
   - tox --parallel || travis_terminate 1
-
-services:
-  - postgresql
-  - redis-server
