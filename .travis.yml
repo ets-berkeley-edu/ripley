@@ -1,12 +1,14 @@
+dist: focal
 sudo: required
 language: python
 python: "3.9"
 
-before_install:
-  - cd ${TRAVIS_BUILD_DIR}
-  - nvm install 16
+services:
+  - postgresql
+  - redis-server
 
 install:
+  - nvm install 18
   - npm install
   - pip3 install tox
 
@@ -17,7 +19,3 @@ script:
   - psql ripley_loch_test -c 'alter schema public owner to ripley;' -U postgres
   - pip3 install -r requirements.txt
   - tox --parallel || travis_terminate 1
-
-services:
-  - postgresql
-  - redis-server
