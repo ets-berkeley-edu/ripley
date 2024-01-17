@@ -18,7 +18,7 @@
         </v-alert>
       </div>
     </div>
-    <div v-if="currentUser.isAdmin" class="align-center d-flex flex-wrap px-3">
+    <div v-if="currentUser.isAdmin || currentUser.isCanvasAdmin" class="align-center d-flex flex-wrap px-3">
       <div class="pr-3">
         <v-text-field
           id="page-site-mailing-list-site-id"
@@ -82,7 +82,7 @@ export default {
     }
   },
   mounted() {
-    if (this.currentUser.isAdmin) {
+    if (this.currentUser.isAdmin || this.currentUser.isCanvasAdmin) {
       this.init()
     } else {
       this.error = 'Unauthorized'

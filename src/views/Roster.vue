@@ -189,7 +189,7 @@ export default {
     }
   },
   created() {
-    if (this.currentUser.isTeaching || this.currentUser.isAdmin) {
+    if (this.currentUser.isTeaching || this.currentUser.isAdmin || this.currentUser.isCanvasAdmin) {
       getRoster(this.currentUser.canvasSiteId).then(
         data => {
           this.roster = data
