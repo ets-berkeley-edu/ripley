@@ -234,6 +234,7 @@ export default {
     this.chartSettings.legend.symbolHeight = 3
     this.chartSettings.plotOptions.series.lineWidth = 3
     this.chartSettings.title.text = 'Class Grade Average by Semester'
+    this.chartSettings.tooltip.distance = 20
     this.chartSettings.yAxis.labels.format = '{value:.1f}'
     this.chartSettings.yAxis.max = 4
     this.chartSettings.yAxis.min = 0

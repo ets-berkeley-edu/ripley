@@ -319,7 +319,7 @@ export default {
       }
     }
     this.chartSettings.title.widthAdjust = -200
-    this.chartSettings.tooltip.distance = 24
+    this.chartSettings.tooltip.distance = 12
     this.chartSettings.yAxis.labels.format = '{value}%'
     this.debouncedSearch = debounce(this.search, 300)
     this.setTooltipFormatter()
