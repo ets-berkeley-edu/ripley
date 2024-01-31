@@ -1,21 +1,21 @@
 <template>
   <div class="pa-5">
-    <div class="pl-3">
+    <div>
       <h2 id="grade-distribution-enrollment-header">Grade Distribution by Prior Class Enrollment</h2>
       <div>
         The grade distribution chart displays available grades at the end of the current and prior semesters.
         Search for a prerequisite course to compare side-by-side final grades of all students taking this course and
         those who have taken the prerequisite.
       </div>
-      <div class="d-flex justify-space-between">
-        <div class="d-flex align-center">
-          <div class="grade-dist-enroll-course-search d-flex align-center">
+      <v-row no-gutters>
+        <v-col cols="12" md="4" sm="6">
+          <div class="grade-dist-enroll-course-search d-flex align-center my-3">
             <v-autocomplete
               id="grade-distribution-enrollment-course-search"
               v-model="selectedCourse"
               auto-select-first
               bg-color="white"
-              class="text-upper my-5 mr-2"
+              class="text-upper mr-2"
               density="compact"
               :disabled="isLoadingPriorEnrollments || isEmpty(get(gradeDistribution, get(selectedTerm, 'id')))"
               :error="!suppressValidation && !isEmpty(courseSearchErrors)"
@@ -56,9 +56,9 @@
           </div>
           <div
             v-if="selectedCourse && insufficientData"
-            class="alert my-0 mx-4 px-4"
+            class="grade-dist-enroll-course-search alert mb-3 px-4"
           >
-            <div class="d-flex">
+            <div class="d-flex flex-no-wrap">
               <v-icon class="canvas-notice-icon mr-2" :icon="mdiAlert" />
               <span>
                 No <span :class="{'demo-mode-blur': isDemoMode}">{{ courseName }}</span> {{ get(selectedTerm, 'name') }}
@@ -66,26 +66,50 @@
               </span>
             </div>
           </div>
-        </div>
-        <div class="position-relative">
-          <select
-            v-if="size(terms)"
-            :value="get(selectedTerm, 'id')"
-            class="position-absolute grade-dist-enroll-term-select"
-            :disabled="isEmpty(get(gradeDistribution, get(selectedTerm, 'id')))"
-            @change="onSelectTerm"
+        </v-col>
+        <v-col
+          class="align-self-end d-flex justify-center px-2"
+          cols="12"
+          md="4"
+          sm="6"
+        >
+          <v-btn
+            id="grade-distribution-enrollment-show-defs-btn"
+            aria-controls="grade-distribution-enrollment-definitions"
+            :aria-expanded="showChartDefinitions"
+            aria-haspopup="true"
+            class="font-weight-medium text-no-wrap my-2"
+            color="primary"
+            :prepend-icon="showChartDefinitions ? mdiArrowUpCircle : mdiArrowDownCircle"
+            size="large"
+            variant="text"
+            @click="showChartDefinitions = !showChartDefinitions"
           >
-            <option
-              v-for="(term, index) in terms"
-              :key="index"
-              :value="term.id"
-            >
-              {{ term.name }}
-            </option>
-          </select>
-        </div>
-      </div>
+            {{ showChartDefinitions ? 'Hide' : 'Show' }} Chart Definitions
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row class="d-flex justify-center" no-gutters>
+        <ChartDefinitions id="grade-distribution-enrollment-definitions" :is-expanded="showChartDefinitions" />
+      </v-row>
       <hr aria-hidden="true" class="mb-3" />
+      <div class="position-relative">
+        <select
+          v-if="size(terms)"
+          :value="get(selectedTerm, 'id')"
+          class="position-absolute grade-dist-enroll-term-select"
+          :disabled="isEmpty(get(gradeDistribution, get(selectedTerm, 'id')))"
+          @change="onSelectTerm"
+        >
+          <option
+            v-for="(term, index) in terms"
+            :key="index"
+            :value="term.id"
+          >
+            {{ term.name }}
+          </option>
+        </select>
+      </div>
     </div>
     <v-overlay
       v-model="isLoadingPriorEnrollments"
@@ -99,7 +123,7 @@
     <v-row v-if="selectedTerm" class="d-flex justify-center">
       <v-btn
         id="grade-distribution-enrollments-show-btn"
-        aria-controls="page-help-notice"
+        aria-controls="grade-distribution-enroll-table-container"
         :aria-expanded="showTable"
         aria-haspopup="true"
         class="font-weight-medium text-no-wrap my-2"
@@ -115,7 +139,12 @@
     </v-row>
     <v-row v-if="selectedTerm" class="d-flex justify-center">
       <v-expand-transition>
-        <v-card v-show="showTable" class="pb-2" width="700">
+        <v-card
+          v-show="showTable"
+          id="grade-distribution-enroll-table-container"
+          class="pb-2"
+          width="700"
+        >
           <table id="grade-distribution-enroll-table" class="border-0 border-t">
             <caption class="font-weight-bold font-size-16 py-3" v-html="chartSettings.title.text"></caption>
             <thead class="bg-grey-lighten-4">
@@ -195,6 +224,7 @@ import {mdiAlert, mdiArrowDownCircle, mdiArrowUpCircle} from '@mdi/js'
 <script>
 import Context from '@/mixins/Context'
 import {Chart} from 'highcharts-vue'
+import ChartDefinitions from '@/components/bcourses/analytics/ChartDefinitions'
 import {cloneDeep, debounce, each, find, get, includes, isEmpty, round, size, sumBy, toUpper} from 'lodash'
 import {getPriorEnrollmentGradeDistribution, searchCourses} from '@/api/grade-distribution'
 import PageLoadProgress from '@/components/utils/PageLoadProgress.vue'
@@ -202,6 +232,7 @@ import PageLoadProgress from '@/components/utils/PageLoadProgress.vue'
 export default {
   name: 'PriorEnrollmentChart',
   components: {
+    ChartDefinitions,
     highcharts: Chart,
     PageLoadProgress
   },
@@ -245,6 +276,7 @@ export default {
     priorEnrollmentGradeDistribution: {},
     selectedCourse: undefined,
     selectedTerm: undefined,
+    showChartDefinitions: false,
     showTable: false,
     suppressValidation: true
   }),
@@ -465,11 +497,11 @@ export default {
 
 <style lang="scss" scoped>
 .grade-dist-enroll-course-search {
-  width: 400px;
+  min-width: 240px;
 }
 .grade-dist-enroll-term-select {
   right: 0;
-  top: 95px;
+  top: 5px;
   z-index: 100;
 }
 table {

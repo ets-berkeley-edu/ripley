@@ -228,7 +228,7 @@ def get_grades_with_demographics(term_id, section_ids, instructor_uid):
         JOIN course c ON sec.sis_course_name = c.sis_course_name {'AND sec.instructor_uid = c.instructor_uid' if instructor_uid else ''}
         JOIN student.student_profile_index spi ON enr.ldap_uid = spi.uid
         LEFT JOIN student.demographics d ON spi.sid = d.sid
-        LEFT JOIN student.visas v on spi.sid = v.sid AND visa_status = 'G'
+        LEFT JOIN student.visas v on spi.sid = v.sid
         WHERE enr.sis_term_id <= %(term_id)s
         AND enr.sis_term_id >= %(earliest_term_id)s
         AND enr.grade IS NOT NULL AND enr.grade != '' AND enr.grade != 'W'

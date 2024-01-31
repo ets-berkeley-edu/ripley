@@ -5,30 +5,63 @@
       The grade average chart displays the class average grade point equivalent at the end of the current
       and prior semesters. Select a demographic to compare average grade point trends.
     </div>
-    <select
-      id="grade-distribution-demographics-select"
-      v-model="selectedDemographic"
-      class="my-4"
-      :disabled="!size(gradeDistribution)"
-      @change="onSelectDemographic"
-    >
-      <option :value="null">Select Demographic</option>
-      <template v-for="(group, key) in demographicOptions" :key="key">
-        <option
-          :id="`grade-distribution-demographics-option-${key}`"
-          :disabled="!size(group.options) || key === 'genders.other'"
-          :value="{'group': key, 'option': get(group.options, 0)}"
+    <v-row no-gutters>
+      <v-col
+        class="pr-4"
+        cols="12"
+        md="4"
+        sm="6"
+      >
+        <select
+          id="grade-distribution-demographics-select"
+          v-model="selectedDemographic"
+          class="grade-distribution-demographics-select justify-center w-100 my-4"
+          :disabled="!size(gradeDistribution)"
+          @change="onSelectDemographic"
         >
-          {{ group.label }}
-        </option>
-      </template>
-    </select>
+          <option :value="null">Select Demographic</option>
+          <template v-for="(group, key) in demographicOptions" :key="key">
+            <option
+              :id="`grade-distribution-demographics-option-${key}`"
+              :disabled="!size(group.options) || key === 'genders.other'"
+              :value="{'group': key, 'option': get(group.options, 0)}"
+            >
+              {{ group.label }}
+            </option>
+          </template>
+        </select>
+      </v-col>
+      <v-col
+        class="align-self-end d-flex justify-center px-2"
+        cols="12"
+        md="4"
+        sm="6"
+      >
+        <v-btn
+          id="grade-distribution-demographics-show-defs-btn"
+          aria-controls="grade-distribution-demographics-definitions"
+          :aria-expanded="showChartDefinitions"
+          aria-haspopup="true"
+          class="font-weight-medium text-no-wrap my-2"
+          color="primary"
+          :prepend-icon="showChartDefinitions ? mdiArrowUpCircle : mdiArrowDownCircle"
+          size="large"
+          variant="text"
+          @click="showChartDefinitions = !showChartDefinitions"
+        >
+          {{ showChartDefinitions ? 'Hide' : 'Show' }} Chart Definitions
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row class="d-flex justify-center" no-gutters>
+      <ChartDefinitions id="grade-distribution-demographics-definitions" :is-expanded="showChartDefinitions" :show-grade-scale="true" />
+    </v-row>
     <hr aria-hidden="true" class="mb-3" />
     <highcharts :options="chartSettings"></highcharts>
     <v-row class="d-flex justify-center">
       <v-btn
         id="grade-distribution-demographics-show-btn"
-        aria-controls="page-help-notice"
+        aria-controls="grade-distribution-demo-table-container"
         :aria-expanded="showTable"
         aria-haspopup="true"
         class="font-weight-medium text-no-wrap my-2"
@@ -44,7 +77,12 @@
     </v-row>
     <v-row class="d-flex justify-center">
       <v-expand-transition>
-        <v-card v-show="showTable" class="pb-2" width="700">
+        <v-card
+          v-show="showTable"
+          id="grade-distribution-demo-table-container"
+          class="pb-2"
+          width="700"
+        >
           <table id="grade-distribution-demo-table" class="border-0 border-t">
             <caption class="font-weight-bold font-size-16 py-3">Class Grade Average by Semester</caption>
             <thead class="bg-grey-lighten-4">
@@ -111,14 +149,16 @@ import {mdiArrowDownCircle, mdiArrowUpCircle} from '@mdi/js'
 </script>
 
 <script>
-import Context from '@/mixins/Context'
 import {Chart} from 'highcharts-vue'
+import ChartDefinitions from '@/components/bcourses/analytics/ChartDefinitions'
+import Context from '@/mixins/Context'
 import {cloneDeep, each, get, replace, round, size} from 'lodash'
 
 export default {
   name: 'DemographicsChart',
   components: {
-    highcharts: Chart
+    highcharts: Chart,
+    ChartDefinitions
   },
   mixins: [Context],
   props: {
@@ -172,6 +212,7 @@ export default {
       },
     },
     selectedDemographic: null,
+    showChartDefinitions: false,
     showTable: false
   }),
   computed: {
@@ -303,5 +344,11 @@ export default {
 <style lang="scss">
 .grade-distribution-demographics .highcharts-legend .highcharts-point {
   y: 12;
+}
+</style>
+
+<style scoped>
+.grade-distribution-demographics-select {
+  min-width: 180px;
 }
 </style>

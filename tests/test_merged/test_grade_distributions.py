@@ -96,12 +96,12 @@ class TestGradeDistributions:
                     },
                     'internationalStatus': {
                         'false': {
-                            'averageGradePoints': 3.8986666666666663,
-                            'count': 75,
+                            'averageGradePoints': 3.9119402985074623,
+                            'count': 67,
                         },
                         'true': {
-                            'averageGradePoints': 3.5,
-                            'count': 8,
+                            'averageGradePoints': 3.64375,
+                            'count': 16,
                         },
                     },
                     'termId': '2228',
@@ -279,12 +279,12 @@ class TestGradeDistributions:
                     },
                     'internationalStatus': {
                         'false': {
-                            'averageGradePoints': 3.8986666666666663,
-                            'count': 75,
+                            'averageGradePoints': 3.9119402985074623,
+                            'count': 67,
                         },
                         'true': {
-                            'averageGradePoints': 3.5,
-                            'count': 8,
+                            'averageGradePoints': 3.64375,
+                            'count': 16,
                         },
                     },
                     'termId': '2228',
@@ -419,12 +419,12 @@ class TestGradeDistributions:
                     },
                     'internationalStatus': {
                         'false': {
-                            'averageGradePoints': 3.8986666666666663,
-                            'count': 75,
+                            'averageGradePoints': 3.9119402985074623,
+                            'count': 67,
                         },
                         'true': {
-                            'averageGradePoints': 3.5,
-                            'count': 8,
+                            'averageGradePoints': 3.64375,
+                            'count': 16,
                         },
                     },
                     'termId': '2228',
