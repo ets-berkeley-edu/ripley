@@ -25,10 +25,10 @@ ENHANCEMENTS, OR MODIFICATIONS.
 
 from flask import current_app as app, request
 from flask_login import current_user
-from ripley.api.errors import ResourceNotFoundError
+from ripley.api.errors import ResourceNotFoundError, UnauthorizedRequestError
 from ripley.api.util import canvas_role_required
 from ripley.externals import canvas
-from ripley.externals.data_loch import find_course_by_name
+from ripley.externals.data_loch import find_course_by_name, get_section_instructors
 from ripley.externals.redis import cache_dict_object, fetch_cached_dict_object
 from ripley.lib.berkeley_term import BerkeleyTerm
 from ripley.lib.canvas_site_utils import canvas_section_to_api_json, canvas_site_to_api_json, \
@@ -41,16 +41,11 @@ from ripley.merged.grade_distributions import get_grade_distribution_with_prior_
 @canvas_role_required('TeacherEnrollment')
 def get_grade_distribution(canvas_site_id):
     instructor_uid = None if current_user.is_admin else current_user.uid
+    course, course_name, section_ids, term = _validate(canvas_site_id, instructor_uid)
     cache_key = f'grade_distribution/{canvas_site_id}/{instructor_uid}'
 
     distribution = fetch_cached_dict_object(cache_key)
     if not distribution:
-        course = canvas.get_course(canvas_site_id)
-        if not course:
-            raise ResourceNotFoundError('Course site not found.')
-        course_name, term = parse_canvas_sis_course_id(course.sis_course_id)
-        canvas_sections = canvas.get_course_sections(canvas_site_id)
-        sis_sections = [canvas_section_to_api_json(cs) for cs in canvas_sections if cs.sis_section_id]
         distribution = {
             'canvasSite': canvas_site_to_api_json(course),
             'courseName': course_name,
@@ -59,9 +54,8 @@ def get_grade_distribution(canvas_site_id):
         def _handle_error():
             raise ResourceNotFoundError('This course does not meet the requirements necessary to generate a Grade Distribution.')
 
-        if sis_sections:
+        if section_ids and len(section_ids):
             term_id = term.to_sis_term_id()
-            section_ids = [s['id'] for s in sis_sections]
             grade_distribution_by_demographic, grade_distribution_by_term = get_grade_distributions(term_id, section_ids, instructor_uid)
             if not grade_distribution_by_demographic:
                 _handle_error()
@@ -88,6 +82,7 @@ def get_grade_distribution(canvas_site_id):
 @canvas_role_required('TeacherEnrollment')
 def get_prior_enrollment_grade_distribution(canvas_site_id):
     instructor_uid = None if current_user.is_admin else current_user.uid
+    course, course_name, section_ids, term = _validate(canvas_site_id, instructor_uid)
     cache_key = f'grade_distribution/{canvas_site_id}/{instructor_uid}/prior_enrollment'
 
     distribution = fetch_cached_dict_object(cache_key)
@@ -112,3 +107,19 @@ def search_courses():
     search_text = request.args.get('searchText')
     results = find_course_by_name(search_text)
     return tolerant_jsonify({'results': [r['sis_course_name'] for r in results]})
+
+
+def _validate(canvas_site_id, instructor_uid):
+    course = canvas.get_course(canvas_site_id)
+    if not course:
+        raise ResourceNotFoundError('Course site not found.')
+    course_name, term = parse_canvas_sis_course_id(course.sis_course_id)
+    canvas_sections = canvas.get_course_sections(canvas_site_id) or []
+    if len(canvas_sections) == 0:
+        raise ResourceNotFoundError('No sections found for this course site.')
+    sis_sections = [canvas_section_to_api_json(cs) for cs in canvas_sections if cs.sis_section_id]
+    section_ids = [s['id'] for s in sis_sections]
+    term_id = term.to_sis_term_id()
+    if instructor_uid and not len(get_section_instructors(term_id, section_ids, instructor_uid=instructor_uid, roles=['PI'])):
+        raise UnauthorizedRequestError('Sorry, you are not authorized to use this tool.')
+    return course, course_name, section_ids, term

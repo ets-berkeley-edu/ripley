@@ -235,7 +235,8 @@ VALUES
 ('2232', '12346', TRUE, 'ASTRON', 'ASTRON 218', 'Stellar Dynamics and Galactic Structure', 'LEC', '002', NULL, '1234567', 1, 'P', NULL, '13579', 'Fitzi Ritz', 'PI', 'Acheron LV 426', 'TUTH', '09:00', '13:30', '2023-01-17', '2023-05-05'),
 ('2228', '32290', TRUE, 'ASTRON', 'ASTRON C228', 'Extragalactic Astronomy and Cosmology', 'LEC', '001', NULL, '124009', 1, 'P', NULL, '30000', 'Ash', 'PI', NULL, NULL, NULL, NULL, NULL, NULL),
 ('2228', '32291', TRUE, 'ASTRON', 'ASTRON C228', 'Extragalactic Astronomy and Cosmology', 'LEC', '002', NULL, '124009', 1, 'P', NULL, '30000', 'Ash', 'PI', NULL, NULL, NULL, NULL, NULL, NULL),
-('2228', '99999', TRUE, 'ASTRON', 'ASTRON 218', 'Stellar Dynamics and Galactic Structure', 'LEC', '001', NULL, '2345678', 1, 'P', NULL, '30000', 'Ash', 'PI', NULL, NULL, NULL, NULL, NULL, NULL);
+('2228', '99999', TRUE, 'ASTRON', 'ASTRON 218', 'Stellar Dynamics and Galactic Structure', 'LEC', '001', NULL, '2345678', 1, 'P', NULL, '30000', 'Ash', 'PI', NULL, NULL, NULL, NULL, NULL, NULL),
+('2208', '30300', TRUE, 'ASTRON', 'ASTRON 3', 'Introduction to Modern Cosmology', 'LEC', '001', NULL, '3456789', 1, 'P', NULL, '30000', 'Ash', 'TNIC', NULL, NULL, NULL, NULL, NULL, NULL);
 
 DROP SCHEMA IF EXISTS student cascade;
 

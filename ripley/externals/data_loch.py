@@ -345,15 +345,21 @@ def get_section_enrollments(term_id, section_ids, include_dropped=True):
     return safe_execute_rds(sql, **params)
 
 
-def get_section_instructors(term_id, section_ids):
+def get_section_instructors(term_id, section_ids, instructor_uid=None, roles=None):
     params = {
         'term_id': term_id,
         'section_ids': section_ids,
     }
-    sql = """SELECT DISTINCT sis_section_id, instructor_uid, instructor_name, instructor_role_code
+    if instructor_uid:
+        params['instructor_uid'] = instructor_uid
+    if roles:
+        params['roles'] = roles
+    sql = f"""SELECT DISTINCT sis_section_id, instructor_uid, instructor_name, instructor_role_code
         FROM sis_data.edo_sections
         WHERE sis_section_id = ANY(%(section_ids)s)
         AND sis_term_id = %(term_id)s
+        {'AND instructor_uid = %(instructor_uid)s' if instructor_uid else ''}
+        {'AND instructor_role_code = ANY(%(roles)s)' if roles else ''}
         ORDER BY sis_section_id, instructor_uid, instructor_name"""
     return safe_execute_rds(sql, **params)
 

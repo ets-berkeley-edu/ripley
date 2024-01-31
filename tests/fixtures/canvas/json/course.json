@@ -161,14 +161,14 @@
                     "id": 101,
                     "user_id": 4567890,
                     "course_id": 3030303,
-                    "course_section_id": 10000,
+                    "course_section_id": 30300,
                     "type": "TeacherEnrollment",
                     "enrollment_state": "active",
                     "role": "TeacherEnrollment",
                     "last_activity_at": "2023-03-02T06:04:43Z",
                     "sis_user_id": "300300000",
-                    "sis_course_id": "CRS:ANTHRO-189-2023-B",
-                    "sis_section_id": "2023-B-32936",
+                    "sis_course_id": "CRS:ASTRON-3-2020-D",
+                    "sis_section_id": "2020-D-30300",
                     "html_url": "https://ucberkeley.beta.instructure.com/courses/3030303/users/4567890"
                 }
             ]
@@ -551,7 +551,7 @@
           {
             "id": 501,
             "name": "Section A",
-            "sis_section_id": "SEC:2023-B-98765",
+            "sis_section_id": "SEC:2023-B-12346",
             "integration_id": null,
             "sis_import_id": 47,
             "course_id": 1234567,
@@ -566,7 +566,21 @@
     "get_sections_3030303": {
         "method": "GET",
         "endpoint": "courses/3030303/sections",
-        "data": []
+        "data": [
+          {
+            "id": 10001,
+            "name": "Section A",
+            "sis_section_id": "SEC:2020-D-30300",
+            "integration_id": null,
+            "sis_import_id": 47,
+            "course_id": 3030303,
+            "sis_course_id": "CRS:ASTRON-3-2020-D",
+            "start_at": "2012-06-01T00:00:00-06:00",
+            "end_at": null,
+            "restrict_enrollments_to_section_dates": null,
+            "nonxlist_course_id": null
+          }
+        ]
     },
     "get_sections_8876542": {
         "method": "GET",
@@ -1672,7 +1686,7 @@
                       "role": "TeacherEnrollment",
                       "last_activity_at": "2023-03-02T06:04:43Z",
                       "sis_user_id": "300300000",
-                      "html_url": "https://ucberkeley.beta.instructure.com/courses/1234567/users/4567890"
+                      "html_url": "https://ucberkeley.beta.instructure.com/courses/1010101/users/4567890"
                     }
                 ],
                 "login_id": "30000",
