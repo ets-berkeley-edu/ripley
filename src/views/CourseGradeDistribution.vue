@@ -82,7 +82,7 @@ export default {
     chartDefaults: {
       chart: {
         backgroundColor: 'transparent',
-        marginTop: 100
+        marginTop: 145
       },
       lang: {
         noData: 'No data available until final grades are returned.'
@@ -127,6 +127,7 @@ export default {
         style: {
           color: '#474747'
         },
+        y: 23
       },
       tooltip: {
         shared: true,
