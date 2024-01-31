@@ -202,7 +202,7 @@ table {
     color: $color-body-black;
     font-size: 14px;
     font-weight: 400;
-    padding-left: 14px;
+    padding: 0 10px 0 14px;
     vertical-align: top;
   }
   tfoot tr td, tfoot tr th {

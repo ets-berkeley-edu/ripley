@@ -54,7 +54,7 @@
       </v-col>
     </v-row>
     <v-row class="d-flex justify-center" no-gutters>
-      <ChartDefinitions id="grade-distribution-demographics-definitions" :is-expanded="showChartDefinitions" :show-grade-scale="true" />
+      <ChartDefinitions id="grade-distribution-demographics-definitions" :is-expanded="showChartDefinitions" :show-demographics="true" />
     </v-row>
     <hr aria-hidden="true" class="mb-3" />
     <highcharts :options="chartSettings"></highcharts>
@@ -88,18 +88,18 @@
             <thead class="bg-grey-lighten-4">
               <tr>
                 <th class="font-weight-bold pl-4 py-2" scope="col">Semester</th>
-                <th class="font-weight-bold py-2" scope="col">Class Grade Average</th>
-                <th class="font-weight-bold py-2" scope="col">Class Grade Count</th>
+                <th class="grade-distribution-table-border font-weight-bold py-2" scope="col">Class Grade Average</th>
+                <th class="text-right font-weight-bold py-2" scope="col">Class Grade Count</th>
                 <th
                   v-if="size(chartSettings.series) > 1"
-                  class="font-weight-bold py-2"
+                  class="grade-distribution-table-border font-weight-bold py-2"
                   scope="col"
                 >
                   {{ selectedDemographicLabel }} Grade Average
                 </th>
                 <th
                   v-if="size(chartSettings.series) > 1"
-                  class="font-weight-bold py-2"
+                  class="text-right font-weight-bold py-2"
                   scope="col"
                 >
                   {{ selectedDemographicLabel }} Grade Count
@@ -120,7 +120,7 @@
                   {{ gradeDistribution[index].termName }}
                 </td>
                 <td :id="`grade-distro-demo-table-row-${index}-grade-0`" class="py-1">{{ chartSettings.series[0]['data'][index].y }}</td>
-                <td :id="`grade-distro-demo-table-row-${index}-count-0`" class="py-1">{{ chartSettings.series[0]['data'][index].custom.count }}</td>
+                <td :id="`grade-distro-demo-table-row-${index}-count-0`" class="text-right py-1">{{ chartSettings.series[0]['data'][index].custom.count }}</td>
                 <td
                   v-if="size(chartSettings.series) > 1"
                   :id="`grade-distro-demo-table-row-${index}-grade-1`"
@@ -131,7 +131,7 @@
                 <td
                   v-if="size(chartSettings.series) > 1"
                   :id="`grade-distro-demo-table-row-${index}-count-1`"
-                  class="py-1"
+                  class="text-right py-1"
                 >
                   {{ chartSettings.series[1]['data'][index].custom.count || 'No data' }}
                 </td>
@@ -277,7 +277,7 @@ export default {
       this.chartSettings.series[0].color = this.colors.primary
       this.chartSettings.series[0].legendSymbol = 'rectangle'
       this.chartSettings.series[0].marker = this.getSeriesMarker(this.chartSettings.series[0])
-      this.chartSettings.series[0].name = 'Overall Class Grades'
+      this.chartSettings.series[0].name = 'Overall Class Avg Grade'
       each(this.gradeDistribution, item => {
         this.chartSettings.series[0].data.push({
           color: this.colors.primary,
@@ -296,7 +296,7 @@ export default {
           data: [],
           legendSymbol: 'rectangle',
           marker: this.getSeriesMarker(this.colors.secondary),
-          name: `${this.selectedDemographicLabel} Grades`
+          name: `${this.selectedDemographicLabel} Avg Grade`
         }
         each(this.gradeDistribution, item => {
           const value = get(item, `${group}.${option}`) || get(item, `${group}`)

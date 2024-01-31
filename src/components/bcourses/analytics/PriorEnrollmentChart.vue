@@ -149,16 +149,22 @@
             <caption class="font-weight-bold font-size-16 py-3" v-html="chartSettings.title.text"></caption>
             <thead class="bg-grey-lighten-4">
               <tr>
-                <th class="font-weight-bold pl-4 py-2" scope="col">Grade</th>
+                <th class="font-weight-bold pl-4 py-2" scope="col" rowspan="2">Grade</th>
                 <template v-for="(series, index) in chartSettings.series" :key="index">
                   <th
-                    class="font-weight-bold py-2"
+                    class="grade-distribution-table-border font-weight-bold text-center pt-2 pb-0"
                     :class="{'demo-mode-blur': isDemoMode && index === 0}"
                     colspan="2"
                     scope="col"
                   >
                     {{ series.name }}
                   </th>
+                </template>
+              </tr>
+              <tr>
+                <template v-for="(series, index) in chartSettings.series" :key="index">
+                  <th class="grade-distribution-table-border font-weight-bold pt-0" scope="col">Ratio</th>
+                  <th class="text-right font-weight-bold pt-0" scope="col">Count</th>
                 </template>
               </tr>
             </thead>
@@ -184,7 +190,7 @@
                   </td>
                   <td
                     :id="`grade-distro-enroll-table-row-${gradeIndex}-count-${index}`"
-                    class="py-1"
+                    class="text-right py-1"
                   >
                     {{ get(series, `data.${gradeIndex}.custom.count`, 0) }}
                   </td>
@@ -203,7 +209,7 @@
                   </td>
                   <td
                     :id="`grade-distro-enroll-table-row-totals-count-${index}`"
-                    class="font-weight-medium py-1"
+                    class="text-right font-weight-medium py-1"
                   >
                     {{ sumBy(series.data, 'custom.count') }}
                   </td>
@@ -503,10 +509,5 @@ export default {
   right: 0;
   top: 5px;
   z-index: 100;
-}
-table {
-  thead tr th[colspan="2"] {
-    border-left: solid 1px $color-container-grey-border;
-  }
 }
 </style>
