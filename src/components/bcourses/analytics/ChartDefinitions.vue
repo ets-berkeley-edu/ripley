@@ -14,20 +14,25 @@
       </v-card-title>
       <v-card-text>
         <dl class="font-size-13">
-          <template class="d-block my-2">
-            <dt class="font-italic d-inline">Other Gender</dt>&mdash;<dd class="d-inline">students of nonbinary or different identity gender</dd>
+          <template v-if="showDemographics">
+            <template class="d-block my-2">
+              <dt class="font-italic d-inline">Other Gender</dt>&mdash;<dd class="d-inline">students of nonbinary or different identity gender</dd>
+            </template>
+            <template class="d-block my-2">
+              <dt class="font-italic d-inline">Underrepresented Minority</dt>&mdash;<dd class="d-inline">identified as African American, Chicano/Latino, Native American/Alaska Native, or Pacific Islander</dd>
+            </template>
+            <template class="d-block my-2">
+              <dt class="font-italic d-inline">International Students</dt>&mdash;<dd class="d-inline">students with a valid VISA status. Includes both self-reported and verified data</dd>
+            </template>
+            <template class="d-block my-2">
+              <dt class="font-italic d-inline">Transfer Students</dt>&mdash;<dd class="d-inline">students who completed coursework during a regular session at another college or university after high school</dd>
+            </template>
           </template>
           <template class="d-block my-2">
-            <dt class="font-italic d-inline">Underrepresented Minority</dt>&mdash;<dd class="d-inline">identified as African American, Chicano/Latino, Native American/Alaska Native, or Pacific Islander</dd>
-          </template>
-          <template class="d-block my-2">
-            <dt class="font-italic d-inline">International Students</dt>&mdash;<dd class="d-inline">students with a valid VISA status. Includes both self-reported and verified data</dd>
-          </template>
-          <template class="d-block my-2">
-            <dt class="font-italic d-inline">Transfer Students</dt>&mdash;<dd class="d-inline">students who completed coursework during a regular session at another college or university after high school</dd>
-          </template>
-          <template v-if="showGradeScale">
-            <dt class="font-italic d-inline">Grade Scales</dt>&mdash;<dd class="d-inline"><OutboundLink href="https://registrar.berkeley.edu/faculty-staff/grading/grading-policies-reports">grade definitions</OutboundLink> as described by the Office of the Registrar</dd>
+            <dt class="font-italic d-inline">Grade Scales</dt>&mdash;
+            <dd class="d-inline">
+              <OutboundLink href="https://registrar.berkeley.edu/faculty-staff/grading/grading-policies-reports">grade definitions</OutboundLink> as described by the Office of the Registrar (excluding S, U, IP, NR, M, and RD grades)
+            </dd>
           </template>
         </dl>
       </v-card-text>
@@ -51,7 +56,7 @@ export default {
       required: false,
       type: Boolean
     },
-    showGradeScale: {
+    showDemographics: {
       required: false,
       type: Boolean
     }

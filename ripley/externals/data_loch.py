@@ -207,11 +207,12 @@ def get_edo_enrollment_updates(since_timestamp):
     return safe_execute_rds(sql, **params)
 
 
-def get_grades_with_demographics(term_id, section_ids, instructor_uid):
+def get_grades_with_demographics(term_id, section_ids, valid_grades, instructor_uid):
     params = {
         'earliest_term_id': str(app.config['CANVAS_OLDEST_OFFICIAL_TERM']),
         'section_ids': section_ids,
         'term_id': term_id,
+        'valid_grades': list(valid_grades),
     }
     if instructor_uid:
         params['instructor_uid'] = instructor_uid
@@ -231,7 +232,7 @@ def get_grades_with_demographics(term_id, section_ids, instructor_uid):
         LEFT JOIN student.visas v on spi.sid = v.sid
         WHERE enr.sis_term_id <= %(term_id)s
         AND enr.sis_term_id >= %(earliest_term_id)s
-        AND enr.grade IS NOT NULL AND enr.grade != '' AND enr.grade != 'W'
+        AND enr.grade = ANY(%(valid_grades)s)
         ORDER BY enr.sis_term_id, enr.grade"""
     return safe_execute_rds(sql, **params)
 
@@ -255,12 +256,13 @@ def get_basic_profile_and_grades_per_enrollments(term_id, section_ids):
     return safe_execute_rds(sql, **params)
 
 
-def get_grades_with_enrollments(term_id, course_name, prior_course_name, instructor_uid):
+def get_grades_with_enrollments(term_id, course_name, prior_course_name, valid_grades, instructor_uid):
     params = {
         'course_name': course_name,
         'earliest_term_id': str(app.config['CANVAS_OLDEST_OFFICIAL_TERM']),
         'prior_course_name': prior_course_name,
         'term_id': term_id,
+        'valid_grades': list(valid_grades),
     }
     if instructor_uid:
         params['instructor_uid'] = instructor_uid
@@ -269,7 +271,7 @@ def get_grades_with_enrollments(term_id, course_name, prior_course_name, instruc
             FROM sis_data.edo_sections sec
             JOIN sis_data.edo_enrollments enr
                 ON sec.sis_term_id = enr.sis_term_id and sec.sis_section_id = enr.sis_section_id
-                AND enr.grade IS NOT NULL AND enr.grade != ''
+                AND enr.grade = ANY(%(valid_grades)s)
             WHERE sec.sis_term_id <= %(term_id)s
             AND sec.sis_term_id >= %(earliest_term_id)s
             AND sec.sis_course_name = %(course_name)s {'AND sec.instructor_uid = %(instructor_uid)s' if instructor_uid else ''}

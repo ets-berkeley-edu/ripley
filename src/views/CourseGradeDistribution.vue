@@ -219,6 +219,9 @@ export default {
     color: transparent !important;
     text-shadow: 0 0 15px rgba(0, 0, 0, 0.7) !important;
   }
+  .grade-distribution-table-border {
+    border-left: solid 1px $color-container-grey-border;
+  }
   .pilot-notice {
     color: $color-harley-davidson-orange;
     font-size: 15px;
@@ -238,6 +241,9 @@ export default {
     }
     tbody tr:hover {
       background-color: $color-table-cell-bg-grey;
+    }
+    th {
+      vertical-align: bottom;
     }
   }
 }
