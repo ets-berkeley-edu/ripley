@@ -91,10 +91,10 @@ def lti_tool_definitions():
                 'visibility': 'admins',
             },
             'grade_distribution': {
-                'name': 'Grade Distribution (LTI 1.3)',
+                'name': 'Grade Distribution',
                 'account_id': app.config['CANVAS_COURSES_ACCOUNT_ID'],
                 'client_id': '10720000000000632',
-                'description': 'Grade Distribution (LTI 1.3)',
+                'description': 'In-progress pilot project',
                 'placement': 'course_navigation',
                 'default': 'disabled',
                 'visibility': 'admins',

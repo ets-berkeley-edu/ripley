@@ -95,9 +95,9 @@ class TestGetGradeDistributionConfig:
             client,
             config_uri='grade_distribution.json',
             expected_default='disabled',
-            expected_description='',
+            expected_description='In-progress pilot project',
             expected_placement='course_navigation',
-            expected_title='Grade Distribution (LTI 1.3)',
+            expected_title='Grade Distribution',
             expected_visibility='admins',
             target='launch_grade_distribution',
         )

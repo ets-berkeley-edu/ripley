@@ -87,12 +87,13 @@ def config_export_grade():
 
 @app.route('/api/lti/config/grade_distribution.json')
 def config_grade_distribution():
+    tool_definition = lti_tool_definitions()['grade_distribution']
     return tool_config(
-        default='disabled',
-        description='',
-        placement='course_navigation',
+        default=tool_definition['default'],
+        description=tool_definition['description'],
+        placement=tool_definition['placement'],
         target='launch_grade_distribution',
-        title='Grade Distribution (LTI 1.3)',
+        title=tool_definition['name'],
         visibility='admins',
     )
 
