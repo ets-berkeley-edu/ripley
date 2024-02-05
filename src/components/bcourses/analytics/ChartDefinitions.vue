@@ -27,12 +27,20 @@
             <template class="d-block my-2">
               <dt class="font-italic d-inline">Transfer Students</dt>&mdash;<dd class="d-inline">students who completed coursework during a regular session at another college or university after high school</dd>
             </template>
+            <template class="d-block my-2">
+              <dt class="font-italic d-inline">Grade Scales</dt>&mdash;
+              <dd class="d-inline">
+                <OutboundLink href="https://registrar.berkeley.edu/faculty-staff/grading/grading-policies-reports">grade definitions</OutboundLink> as described by the Office of the Registrar (excluding P, NP, I, S, U, IP, NR, M, and RD grades)
+              </dd>
+            </template>
           </template>
-          <template class="d-block my-2">
-            <dt class="font-italic d-inline">Grade Scales</dt>&mdash;
-            <dd class="d-inline">
-              <OutboundLink href="https://registrar.berkeley.edu/faculty-staff/grading/grading-policies-reports">grade definitions</OutboundLink> as described by the Office of the Registrar (excluding S, U, IP, NR, M, and RD grades)
-            </dd>
+          <template v-else>
+            <template class="d-block my-2">
+              <dt class="font-italic d-inline">Grade Scales</dt>&mdash;
+              <dd class="d-inline">
+                <OutboundLink href="https://registrar.berkeley.edu/faculty-staff/grading/grading-policies-reports">grade definitions</OutboundLink> as described by the Office of the Registrar (excluding S, U, IP, NR, M, and RD grades)
+              </dd>
+            </template>
           </template>
         </dl>
       </v-card-text>
