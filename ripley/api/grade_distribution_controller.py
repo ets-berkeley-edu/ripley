@@ -83,11 +83,11 @@ def get_grade_distribution(canvas_site_id):
 def get_prior_enrollment_grade_distribution(canvas_site_id):
     instructor_uid = None if current_user.is_admin else current_user.uid
     course, course_name, section_ids, term = _validate(canvas_site_id, instructor_uid)
-    cache_key = f'grade_distribution/{canvas_site_id}/{instructor_uid}/prior_enrollment'
+    prior_course_name = request.args.get('prior')
+    cache_key = f'grade_distribution/{canvas_site_id}/{instructor_uid}/{prior_course_name}'
 
     distribution = fetch_cached_dict_object(cache_key)
     if not distribution:
-        prior_course_name = request.args.get('prior')
         course = canvas.get_course(canvas_site_id)
         course_name, term = parse_canvas_sis_course_id(course.sis_course_id)
         distribution = get_grade_distribution_with_prior_enrollments(
