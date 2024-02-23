@@ -443,22 +443,36 @@ class BcoursesRefreshBaseJob(BaseJob):
 
         email_deletions_file = tempfile.NamedTemporaryFile(suffix='.csv')
         with open(email_deletions_file.name, 'w') as f:
-            email_deletions = csv.DictWriter(f, fieldnames=['canvas_user_id', 'email_address']) # noqa
+            email_deletions = csv.DictWriter(f, fieldnames=['canvas_user_id', 'email_address', 'result']) # noqa
             email_deletions.writeheader()
+            success_count = 0
+            error_count = 0
 
             for canvas_user_id in self.email_deletions:
                 for channel in canvas.get_communication_channels(canvas_user_id):
                     if channel.type == 'email':
                         if self.dry_run:
                             app.logger.info(f'Dry run mode, would delete communication channel {channel}.')
+                            result = 'dry_run'
                         else:
-                            app.logger.info(f'Deleting communication channel {channel}.')
-                            channel.delete()
+                            try:
+                                app.logger.info(f'Deleting communication channel {channel}.')
+                                channel.delete()
+                                result = 'success'
+                                success_count += 1
+                            except Exception as e:
+                                app.logger.error(f'Error deleting communication channel {channel}.')
+                                app.logger.exception(e)
+                                result = 'error'
+                                error_count += 1
                         email_deletions.writerow({
                             'canvas_user_id': canvas_user_id,
                             'email_address': channel.address,
+                            'result': result,
                         })
 
+        if not self.dry_run:
+            app.logger.info(f'Communication channel deletion results: {success_count} successes, {error_count} errors.')
         upload_dated_csv(
             folder='canvas-sis-imports',
             local_name=email_deletions_file.name,
