@@ -52,7 +52,9 @@ def get_grade_distribution(canvas_site_id):
         }
 
         def _handle_error():
-            raise ResourceNotFoundError('This course does not meet the requirements necessary to generate a Grade Distribution.')
+            raise ResourceNotFoundError(
+                'This course does not meet the requirements necessary to generate a Grade Distribution, '
+                'or has not yet had final grades returned.')
 
         if section_ids and len(section_ids):
             term_id = term.to_sis_term_id()
@@ -67,6 +69,13 @@ def get_grade_distribution(canvas_site_id):
             ]
             distribution['demographics'] = grade_distribution_by_demographic
             distribution['enrollments'] = grade_distribution_by_term
+
+            if term_id not in grade_distribution_by_term.keys():
+                distribution['terms'].append({
+                    'id': term_id,
+                    'name': BerkeleyTerm.from_sis_term_id(term_id).to_english(),
+                })
+
             cache_dict_object(cache_key, distribution, app.config['GRADE_DISTRIBUTION_CACHE_EXPIRES_IN_DAYS'] * 86400)
         else:
             _handle_error()

@@ -98,7 +98,7 @@
           v-if="size(terms)"
           :value="get(selectedTerm, 'id')"
           class="position-absolute grade-dist-enroll-term-select"
-          :disabled="isEmpty(get(gradeDistribution, get(selectedTerm, 'id')))"
+          :disabled="isEmpty(gradeDistribution)"
           @change="onSelectTerm"
         >
           <option
