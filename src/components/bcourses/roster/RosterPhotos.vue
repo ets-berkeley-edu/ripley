@@ -30,7 +30,7 @@
             <div class="page-roster-student-name">{{ student.lastName }}</div>
           </div>
           <div v-if="student.email" class="pt-2">
-            <OutboundLink :id="`student-email-${student.studentId}`" :href="`mailto:${student.email}`">
+            <OutboundLink :id="`student-email-${student.studentId}`" :href="`mailto:${student.email}`" hide-icon>
               <div class="sr-only">Email </div>
               <div class="page-roster-student-name font-weight-regular">{{ student.firstName }}</div>
               <span class="sr-only">&NonBreakingSpace;</span><div class="page-roster-student-name">{{ student.lastName }}</div>
@@ -138,10 +138,14 @@ export default {
 }
 
 @media print {
+  a {
+    text-decoration: none;
+  }
   a[href]::after {
     content: none;
   }
   .page-roster-student-name {
+    color: $color-off-black;
     font-size: 18px;
     overflow: visible;
     text-overflow: ellipsis;
@@ -149,8 +153,13 @@ export default {
   *.v-card-roster-photo {
     margin: 0 !important;
   }
+  .photo-list {
+    display: table;
+  }
   .photo-wrapper {
-    width: 200px;
+    float: none;
+    padding: 0 20px;
+    width: 130px;
   }
   .photo-wrapper-one-per-page {
     display: block;
