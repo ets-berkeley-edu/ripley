@@ -37,7 +37,7 @@ from ripley.lib.util import utc_now
 from rq.job import get_current_job
 
 
-def provision_course_site(uid, site_name, site_abbreviation, term_slug, section_ids, is_admin_by_ccns):
+def provision_course_site(uid, site_name, site_abbreviation, term_slug, section_ids, is_admin_by_ccns):  # noqa C901
     term = BerkeleyTerm.from_slug(term_slug)
     if is_admin_by_ccns:
         # Admins can specify semester and CCNs directly, without access checks.
@@ -45,16 +45,21 @@ def provision_course_site(uid, site_name, site_abbreviation, term_slug, section_
         terms_feed = get_teaching_terms(sections=sort_course_sections(sections))
     else:
         # Otherwise, the user must have instructor access (direct or inherited via section nesting) to all sections.
-        terms_feed = get_teaching_terms(section_ids=section_ids, term_id=term.to_canvas_sis_term_id(), uid=uid)
+        terms_feed = get_teaching_terms(term_id=term.to_canvas_sis_term_id(), uid=uid)
 
     courses_list = terms_feed[0]['classes'] if terms_feed else []
-    if not courses_list:
+    course_slug = None
+    dept_name = None
+    for course in courses_list:
+        if next((s for s in course['sections'] if s['id'] in section_ids), None):
+            course_slug = course['slug']
+            dept_name = course['deptName']
+            break
+
+    if not course_slug:
         raise BadRequestError('No candidate courses found.')
 
-    course_slug = courses_list[0]['slug']
-
     # Identify department subaccount
-    dept_name = courses_list[0]['deptName']
     account = _subaccount_for_department(dept_name)
     sis_term_id = term.to_canvas_sis_term_id()
     sis_course_id = get_canvas_course_id(course_slug)
