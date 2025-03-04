@@ -716,7 +716,7 @@ addMentalHealthResourcesResponsiveLink();
       '    <a href="https://www.instructure.com/policies/terms-of-use" target="_blank">Terms of Service</a>',
       '  </div>',
       '  <div>',
-      '    <a href="https://dls.berkeley.edu/bcourses-data-use-and-analytics" target="_blank">Data Use &amp; Analytics</a>',
+      '    <a href="https://rtl.berkeley.edu/services-programs/bcourses/bcourses-data-use-and-analytics" target="_blank">Data Use &amp; Analytics</a>',
       '    <a href="http://teaching.berkeley.edu/berkeley-honor-code" target="_blank">UC Berkeley Honor Code</a>',
       '    <a href="https://asuc.org/resources/" target="_blank">Student Resources</a>',
       '  </div>',
