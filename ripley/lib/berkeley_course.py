@@ -65,13 +65,14 @@ def section_to_api_json(section_rows):
         'recurring': [],
     }
     for row in section_rows:
-        if not next((i for i in instructors if i['uid'] == row['instructor_uid']), None):
+        instructor_uid = row['instructor_uid']
+        if instructor_uid and not next((i for i in instructors if i['uid'] == instructor_uid), None):
             instructors.append({
                 'name': row['instructor_name'],
                 'role': row['instructor_role_code'],
-                'uid': row['instructor_uid'],
+                'uid': instructor_uid,
             })
-        instructors = sorted(instructors, key=lambda i: i['name'] or i['uid'])
+        instructors = sorted(instructors, key=lambda i: i['name'] or i['uid'] or '')
 
         meeting_location = row['meeting_location']
         if row['meeting_days']:
