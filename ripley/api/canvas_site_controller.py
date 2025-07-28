@@ -112,7 +112,7 @@ def manage_official_sections():
         sis_term_id = term.to_canvas_sis_term_id()
         api_json[term_id] = []
         for canvas_course in canvas_courses:
-            if canvas_course.term['sis_term_id'] == sis_term_id:
+            if 'sis_term_id' in canvas_course.term and canvas_course.term['sis_term_id'] == sis_term_id:
                 enrollments = list(filter(lambda e: e.get('user_id') == current_user.canvas_user_id, canvas_course.enrollments))
                 current_user_roles = [e['role'] for e in enrollments]
                 if next((role for role in current_user_roles if role in ROLES_CAN_VIEW_OFFICIAL_SECTIONS), None):
