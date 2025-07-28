@@ -127,8 +127,10 @@ def csv_formatted_course_role(role):
 
 
 def extract_berkeley_term_id(canvas_site):
-    sis_term_id = canvas_site.term['sis_term_id']
-    term = BerkeleyTerm.from_canvas_sis_term_id(sis_term_id) if sis_term_id else None
+    term = None
+    if 'sis_term_id' in canvas_site.term:
+        sis_term_id = canvas_site.term['sis_term_id']
+        term = BerkeleyTerm.from_canvas_sis_term_id(sis_term_id) if sis_term_id else None
     return term.to_sis_term_id() if term else None
 
 
