@@ -24,6 +24,7 @@ ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 from copy import deepcopy
+import heapq
 from itertools import groupby
 from math import sqrt
 from statistics import mean, median, stdev
@@ -83,6 +84,7 @@ def get_grade_distributions(course_term_id, section_ids, instructor_uid=None):  
                 demographics_distribution[term_id][distribution_key][value].append(grade_points)
 
             _count_string_value(_simplify_gender(row['gender']), 'genders')
+            _count_string_value(row['major'], 'majors')
 
     letter_grades_included = []
 
@@ -96,6 +98,22 @@ def get_grade_distributions(course_term_id, section_ids, instructor_uid=None):  
         for grade in sorted(term_distribution.keys(), key=_grade_ordering_index):
             if grade in GRADE_ORDERING and grade not in letter_grades_included:
                 letter_grades_included.append(grade)
+
+    # Count overall frequency of majors across terms; only the most frequent will be included in the distribution.
+    major_frequencies = {}
+
+    for term_id in demographics_distribution.keys():
+        if demographics_distribution[term_id]['count'] < int(app.config['NEWT_MINIMUM_CLASS_SIZE']):
+            continue
+        for major, values in demographics_distribution[term_id].get('majors', {}).items():
+            app.logger.info(values)
+            if values and major not in app.config['GRADE_DISTRIBUTION_IGNORED_MAJORS']:
+                if major not in major_frequencies:
+                    major_frequencies[major] = 0
+                major_frequencies[major] += len(values)
+
+    top_majors = heapq.nlargest(app.config['GRADE_DISTRIBUTION_MAXIMUM_MAJORS'], major_frequencies.items(), key=lambda item: item[1])
+    top_major_names = set(item[0] for item in top_majors)
 
     sorted_grade_distribution_by_term = {}
     for term_id, term_distribution in grade_distribution_by_term.items():
@@ -125,36 +143,48 @@ def get_grade_distributions(course_term_id, section_ids, instructor_uid=None):  
         sorted_grade_distribution_by_term[term_id] = sorted_grade_distribution
 
     sorted_demographics_distribution = []
+
     for term_id in sorted(demographics_distribution.keys()):
+        term_demographics_distribution = {
+            'termId': term_id,
+            'termName': BerkeleyTerm.from_sis_term_id(term_id).to_english(),
+        }
+
         if demographics_distribution[term_id]['count'] < int(app.config['NEWT_MINIMUM_CLASS_SIZE']):
             app.logger.debug(f"Newt: term ID {term_id} excluded from {demographics_distribution[term_id]['courseName']} demographics chart: \
 enrollment count ({demographics_distribution[term_id]['count']}) falls short of minimum class size")
             continue
+
+        term_grade_point_list = demographics_distribution[term_id].pop('gradePointList', [])
+        term_demographics_distribution.update({
+            'count': demographics_distribution[term_id]['count'],
+            'courseName': demographics_distribution[term_id]['courseName'],
+            'meanGradePoints': round(mean(term_grade_point_list), 3) if len(term_grade_point_list) else 0,
+            'medianGradePoints': round(median(term_grade_point_list), 3) if len(term_grade_point_list) else 0,
+            'errorGradePoints': round((stdev(term_grade_point_list) / sqrt(len(term_grade_point_list))), 3) if len(term_grade_point_list) > 1 else 0,
+        })
+
         for distribution_key, values in demographics_distribution[term_id].items():
-            if distribution_key in ['count', 'courseName', 'gradePointList']:
+            if distribution_key in ['count', 'courseName']:
                 continue
+            term_demographics_distribution[distribution_key] = {}
             for distribution_value, grade_points_list in values.items():
+                if distribution_key == 'majors' and distribution_value not in top_major_names:
+                    continue
                 student_count = len(grade_points_list)
                 if student_count < app.config['NEWT_SMALL_CELL_THRESHOLD']:
                     app.logger.debug(f"Newt: {demographics_distribution[term_id]['courseName']} term ID {term_id} has only {student_count} \
 {distribution_key}--{distribution_value} students; value obscured in demographics chart")
-                    demographics_distribution[term_id][distribution_key][distribution_value] = None
+                    term_demographics_distribution[distribution_key][distribution_value] = None
                 else:
-                    demographics_distribution[term_id][distribution_key][distribution_value] = {
+                    term_demographics_distribution[distribution_key][distribution_value] = {
                         'meanGradePoints': round(mean(grade_points_list), 3) if student_count else 0,
                         'medianGradePoints': round(median(grade_points_list), 3) if student_count else 0,
                         'errorGradePoints': round((stdev(grade_points_list) / sqrt(student_count)), 3) if student_count > 1 else 0,
                         'count': student_count,
                     }
-        term_grade_point_list = demographics_distribution[term_id].pop('gradePointList', [])
-        sorted_demographics_distribution.append({
-            'meanGradePoints': round(mean(term_grade_point_list), 3) if len(term_grade_point_list) else 0,
-            'medianGradePoints': round(median(term_grade_point_list), 3) if len(term_grade_point_list) else 0,
-            'errorGradePoints': round((stdev(term_grade_point_list) / sqrt(len(term_grade_point_list))), 3) if len(term_grade_point_list) > 1 else 0,
-            **demographics_distribution[term_id],
-            'termId': term_id,
-            'termName': BerkeleyTerm.from_sis_term_id(term_id).to_english(),
-        })
+        sorted_demographics_distribution.append(term_demographics_distribution)
+
     return sorted_demographics_distribution, sorted_grade_distribution_by_term
 
 
@@ -209,6 +239,7 @@ def get_grade_distribution_with_prior_enrollments(term_id, course_name, prior_co
 
 EMPTY_DEMOGRAPHIC_DISTRIBUTION = {
     'genders': {},
+    'majors': {},
     'athleteStatus': {
         'true': [],
         'false': [],

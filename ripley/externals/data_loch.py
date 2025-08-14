@@ -245,8 +245,18 @@ def get_grades_with_demographics(term_id, section_ids, valid_grades, instructor_
             WHERE sec.sis_term_id = %(term_id)s
             AND sec.sis_section_id = ANY(%(section_ids)s) {'AND sec.instructor_uid = %(instructor_uid)s' if instructor_uid else ''}
         )
-        SELECT DISTINCT enr.sis_term_id AS term_id, sec.sis_course_name, enr.sis_section_id, enr.ldap_uid, enr.grade,
-            spi.transfer, a.active AS athlete, d.gender, d.minority, v.visa_type
+        SELECT DISTINCT
+            enr.sis_term_id AS term_id,
+            sec.sis_course_name,
+            enr.sis_section_id,
+            enr.ldap_uid,
+            enr.grade,
+            spi.transfer,
+            a.active AS athlete,
+            d.gender,
+            d.minority,
+            v.visa_type,
+            m.major
         FROM sis_data.edo_enrollments enr
         JOIN sis_data.edo_sections sec on enr.sis_term_id = sec.sis_term_id and enr.sis_section_id = sec.sis_section_id
         JOIN course c ON sec.sis_course_name = c.sis_course_name {'AND sec.instructor_uid = c.instructor_uid' if instructor_uid else ''}
@@ -254,6 +264,7 @@ def get_grades_with_demographics(term_id, section_ids, valid_grades, instructor_
         LEFT JOIN boac_advising_asc.students a ON spi.sid = a.sid AND a.active IS TRUE
         LEFT JOIN student.demographics d ON spi.sid = d.sid
         LEFT JOIN student.visas v on spi.sid = v.sid
+        LEFT JOIN student.student_majors m ON spi.sid = m.sid
         WHERE enr.sis_term_id <= %(term_id)s
         AND enr.sis_term_id >= %(earliest_term_id)s
         AND enr.grade = ANY(%(valid_grades)s)

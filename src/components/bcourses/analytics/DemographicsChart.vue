@@ -309,6 +309,20 @@ const collectDemographicOptions = () => {
             option['options'] = ['true']
           }
         })
+      } else if (category === 'majors') {
+        each(values, (vals, subcategory) => {
+          if (!vals) return
+          if (!demographicOptions.value['divider3']) {
+            demographicOptions.value['divider3'] = {
+              label: '─────',
+              options: []
+            }
+          }
+          demographicOptions.value[`majors.${subcategory}`] = {
+            label: subcategory,
+            options: ['true']
+          }
+        })
       }
     })
   })

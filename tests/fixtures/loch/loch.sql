@@ -450,6 +450,27 @@ VALUES
 ('3000000090','Mexican / Mexican-American / Chicano'),
 ('3000000091','Chinese / Chinese-American');
 
+CREATE TABLE student.student_majors
+(
+    sid VARCHAR,
+    major VARCHAR
+);
+
+INSERT INTO student.student_majors
+(sid, major)
+VALUES
+('3000000001', 'Bioresource Sciences BS'),
+('3000000002', 'English BA'),
+('3000000003', 'English BA'),
+('3000000004', 'History BA'),
+('3000000005', 'History BA'),
+('3000000007', 'Molecular Environ Biology BS'),
+('3000000024', 'Ethnic Studies BA'),
+('3000000051', 'Geography BA'),
+('3000000062', 'Forestry BS'),
+('3000000074', 'Forestry BS'),
+('3000000083', 'Forestry BS');
+
 CREATE TABLE student.student_profile_index
 (
     sid VARCHAR,

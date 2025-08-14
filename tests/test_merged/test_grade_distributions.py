@@ -74,6 +74,14 @@ class TestGradeDistributions:
                         'errorGradePoints': 0,
                     },
                 },
+               'majors': {
+                    'Bioresource Sciences BS': {
+                       'count': 1,
+                       'errorGradePoints': 0,
+                       'meanGradePoints': 2,
+                       'medianGradePoints': 2,
+                    },
+                },
                 'medianGradePoints': 2,
                 'termId': '2225',
                 'termName': 'Summer 2022',
@@ -157,6 +165,26 @@ class TestGradeDistributions:
                         'count': 16,
                         'medianGradePoints': 4.0,
                         'errorGradePoints': 0.25,
+                    },
+                },
+               'majors': {
+                   'Bioresource Sciences BS': {
+                       'count': 1,
+                       'errorGradePoints': 0,
+                       'meanGradePoints': 3.7,
+                       'medianGradePoints': 3.7,
+                   },
+                   'English BA': {
+                       'count': 2,
+                       'errorGradePoints': 0.0,
+                       'meanGradePoints': 4,
+                       'medianGradePoints': 4.0,
+                   },
+                   'Forestry BS': {
+                       'count': 3,
+                       'errorGradePoints': 0.0,
+                       'meanGradePoints': 4,
+                       'medianGradePoints': 4,
                     },
                 },
                 'medianGradePoints': 4,
@@ -411,6 +439,9 @@ class TestGradeDistributions:
                     'true': None,
                     'false': None,
                 },
+                'majors': {
+                   'Bioresource Sciences BS': None,
+                },
                 'transferStatus': {
                     'true': None,
                     'false': None,
@@ -468,6 +499,11 @@ class TestGradeDistributions:
                         'medianGradePoints': 4,
                         'errorGradePoints': 0.25,
                     },
+                },
+               'majors': {
+                   'Bioresource Sciences BS': None,
+                   'English BA': None,
+                   'Forestry BS': None,
                 },
                 'medianGradePoints': 4,
                 'termId': '2228',
@@ -754,6 +790,26 @@ class TestGradeDistributions:
                         'count': 16,
                         'medianGradePoints': 4.0,
                         'errorGradePoints': 0.25,
+                    },
+                },
+               'majors': {
+                   'English BA': {
+                       'count': 2,
+                       'errorGradePoints': 0.0,
+                       'meanGradePoints': 4,
+                       'medianGradePoints': 4.0,
+                   },
+                   'Forestry BS': {
+                       'count': 3,
+                       'errorGradePoints': 0.0,
+                       'meanGradePoints': 4,
+                       'medianGradePoints': 4,
+                   },
+                   'Geography BA': {
+                       'count': 1,
+                       'errorGradePoints': 0,
+                       'meanGradePoints': 4,
+                       'medianGradePoints': 4,
                     },
                 },
                 'medianGradePoints': 4,
