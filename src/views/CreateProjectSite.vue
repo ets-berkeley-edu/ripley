@@ -108,8 +108,8 @@ const create = () => {
           window.location.href = data.url
         }
       },
-      error => {
-        error.value = error
+      e => {
+        error.value = e
       }
     ).finally(() => {
       isCreating.value = false

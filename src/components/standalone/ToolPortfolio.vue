@@ -175,8 +175,8 @@ const updateCanvasSiteId = () => {
         canvasSiteId.value = currentUser.canvasSiteId
         router.go(1)
       },
-      error => {
-        error.value = error
+      e => {
+        error.value = e
       }
     ).finally(() => {
       isUpdatingCanvasSiteId.value = false

@@ -188,8 +188,8 @@ onMounted(() => {
         })
       }
     },
-    error => {
-      error.value = error
+    e => {
+      error.value = e
       contextStore.loadingComplete()
     }
   )
@@ -219,9 +219,9 @@ const create = () => {
         mailingListStore.setMailingList(data)
         nextTick(goToNextPage())
       },
-      error => {
+      e => {
         alertScreenReader('Error.', 'assertive')
-        error.value = error
+        error.value = e
       }
     ).finally(() => {
       clearInterval(createTimer)

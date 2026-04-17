@@ -197,7 +197,7 @@ onMounted(() => {
       const threshold = 36
       showPrintButtonTooltip.value = (students.value.length >= threshold) && disablePrintButton.value
     },
-    error => error.value = error
+    e => error.value = e
   ).finally(() => contextStore.loadingComplete())
 })
 
