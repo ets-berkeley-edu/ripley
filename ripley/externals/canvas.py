@@ -403,14 +403,17 @@ def get_user(user_id, api_call=True, api_url=None):
         return user
 
 
-def get_user_courses(uid):
+def get_user_courses(uid, include_completed=False):
     courses = None
     try:
         user = get_user(f'sis_login_id:{uid}', api_call=False)
         if user:
             # Load all courses because ResourceDoesNotExist is possible when paging. Omit any malformed
             # or access-restricted feed elements with no term included.
-            courses = [course for course in user.get_courses(include=['term']) if hasattr(course, 'term')]
+            kwargs = {'include': ['term']}
+            if include_completed:
+                kwargs['state'] = ['available', 'completed', 'unpublished']
+            courses = [course for course in user.get_courses(**kwargs) if hasattr(course, 'term')]
     except Exception as e:
         app.logger.error(f'Failed to retrieve courses in which UID {uid} is enrolled.')
         app.logger.exception(e)
