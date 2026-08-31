@@ -23,7 +23,13 @@ SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY, PROVIDED HEREUNDER IS PROVIDED
 ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-from ripley.lib.canvas_site_utils import parse_canvas_sis_course_id, parse_canvas_sis_section_id, uid_from_canvas_login_id
+from unittest import mock
+
+import requests_mock
+from ripley.externals import canvas
+from ripley.lib.canvas_site_utils import parse_canvas_sis_course_id, parse_canvas_sis_section_id, \
+    uid_from_canvas_login_id, update_canvas_sections
+from tests.util import mock_s3_bucket, register_canvas_uris
 
 
 class TestCanvasUtils:
@@ -54,3 +60,32 @@ class TestCanvasUtils:
         assert parse_canvas_sis_section_id('666') == (None, None)
         assert parse_canvas_sis_section_id('SEC:2023-B-12345')[0] == '12345'
         assert parse_canvas_sis_section_id('SEC:2023-B-12345')[1].to_sis_term_id() == '2232'
+
+
+class TestUpdateCanvasSections:
+
+    def test_unlink_section_ignores_sections_without_sis_id(self, app):
+        """A course site section with no SIS ID does not break unlinking an official section."""
+        with requests_mock.Mocker() as m:
+            register_canvas_uris(app, {
+                'account': ['create_sis_import', 'get_by_id', 'get_sis_import'],
+                'course': ['get_by_id_8876542', 'get_sections_8876542'],
+            }, m)
+            course = canvas.get_course('8876542')
+            # The get_sections_8876542 fixture contains "Section C" with sis_section_id=None.
+            assert any(s.sis_section_id is None for s in course.get_sections())
+
+            with mock_s3_bucket(app):
+                with mock.patch('ripley.lib.canvas_site_utils.update_section_enrollments') as mock_update_enrollments:
+                    update_canvas_sections(
+                        course=course,
+                        all_section_ids=['32936'],
+                        section_ids_to_remove=['32936'],
+                        section_ids_to_update=[],
+                    )
+
+            csv_rows = mock_update_enrollments.call_args.kwargs['all_sections']
+            # The official section is queued for deletion...
+            assert [r for r in csv_rows if r['section_id'] == 'SEC:2023-B-32936' and r['status'] == 'deleted']
+            # ...and the SIS-less section is silently skipped rather than raising AttributeError.
+            assert all(r['section_id'] for r in csv_rows)

@@ -231,8 +231,6 @@ import {useRoute, useRouter} from 'vue-router'
 import {Course, Section, SectionEdit, Semester} from '@/lib/types'
 
 const contextStore = useContextStore()
-const adminActingAs = ref()
-const adminTerms = ref()
 const availableSectionsPanel = ref<string[]>([])
 const backgroundJobId = ref()
 const canvasSite = ref()
@@ -243,12 +241,9 @@ const error = ref()
 const existingCourseSections = ref([])
 const exportTimer = ref()
 const feedFetched = ref<boolean>()
-const isAdmin = ref<boolean>()
-const isCourseCreator = ref<boolean>()
 const jobStatus = ref()
 const jobStatusMessage = ref('')
 const router = useRouter()
-const usersClassCount = ref<number>(NaN)
 
 const allSections = computed<Section[]>(() => {
   return flatMap(courseSemesterClasses.value, c => c.sections)
@@ -331,11 +326,6 @@ const fetchFeed = () => {
       if (data.teachingTerms) {
         loadCourseLists(data.teachingTerms)
       }
-      // TODO: Where are the following values coming from? I do not see them in the /official_sections feed.
-      isAdmin.value = data.is_admin
-      adminActingAs.value = data.adminActingAs
-      adminTerms.value = data.adminTerms
-      isCourseCreator.value = usersClassCount.value > 0
       feedFetched.value = true
       changeWorkflowStep('preview')
     } else {
@@ -353,7 +343,6 @@ const loadCourseLists = (teachingTerms) => {
   if (courseSemester) {
     availableSectionsPanel.value = []
     courseSemesterClasses.value = courseSemester.classes
-    usersClassCount.value = courseSemesterClasses.value.length
     existingCourseSections.value = canvasSite.value.officialSections
     each(courseSemesterClasses.value, classItem => {
       each(classItem.sections, teachingSection => {
@@ -370,8 +359,6 @@ const loadCourseLists = (teachingTerms) => {
         })
       })
     })
-  } else {
-    usersClassCount.value = 0
   }
 }
 
