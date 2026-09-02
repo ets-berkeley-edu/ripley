@@ -331,7 +331,8 @@ var addCourseRetentionPolicyBanner = function() {
               padding: 12px;
               font-weight: bold;
               width: 100%;
-              z-index: 9999;
+              position: relative;
+              z-index: 1;
               box-sizing: border-box;
             ">
               <p style="margin: 0 0 20px 0;">
