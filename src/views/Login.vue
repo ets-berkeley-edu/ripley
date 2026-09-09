@@ -46,7 +46,7 @@
                 label="UID"
                 required
                 variant="solo"
-                width="18.75rem"
+                width="24rem"
                 @keydown.enter="devAuth"
                 @update:model-value="clearErrors"
               />
@@ -65,12 +65,12 @@
                 required
                 type="password"
                 variant="solo"
-                width="18.75rem"
+                width="24rem"
                 @keydown.enter="devAuth"
                 @update:model-value="clearErrors"
               />
             </div>
-            <div class="pb-4">
+            <div class="pb-2">
               <v-text-field
                 id="basic-auth-canvas-course-id"
                 v-model="canvasSiteId"
@@ -82,7 +82,24 @@
                 label="Canvas Course ID (optional)"
                 required
                 variant="solo"
-                width="18.75rem"
+                width="24rem"
+                @keydown.enter="devAuth"
+                @update:model-value="clearErrors"
+              />
+            </div>
+            <div class="pb-4">
+              <v-text-field
+                id="basic-auth-canvas-masquerading-user-id"
+                v-model="canvasMasqueradingUserId"
+                autocomplete="on"
+                class="my-2 text-field"
+                density="comfortable"
+                :disabled="isLoggingIn"
+                hide-details
+                label="Canvas Masquerading User ID (optional)"
+                required
+                variant="solo"
+                width="24rem"
                 @keydown.enter="devAuth"
                 @update:model-value="clearErrors"
               />
@@ -119,6 +136,7 @@ import {alertScreenReader, putFocusNextTick} from '@/utils'
 import {devAuthLogIn, getCasLoginURL} from '@/api/auth'
 import {useContextStore} from '@/stores/context'
 
+const canvasMasqueradingUserId = ref(undefined)
 const canvasSiteId = ref(undefined)
 const contextStore = useContextStore()
 const config = contextStore.config
@@ -149,7 +167,7 @@ const devAuth = () => {
   const uidTrimmed = trim(uid.value)
   if (uidTrimmed && passwordTrimmed) {
     isLoggingIn.value = true
-    devAuthLogIn(trim(canvasSiteId.value), uidTrimmed, passwordTrimmed).then(
+    devAuthLogIn(trim(canvasSiteId.value), uidTrimmed, passwordTrimmed, trim(canvasMasqueradingUserId.value)).then(
       data => {
         if (data.isAuthenticated) {
           contextStore.setCurrentUser(data)
@@ -187,7 +205,7 @@ const toCasLogin = () => {
 
 <style>
 .dev-auth-error {
-  width: 18.75rem !important;
+  width: 24rem !important;
 }
 .text-field .v-field {
   background-color: rgba(255, 255, 255, 0.7);

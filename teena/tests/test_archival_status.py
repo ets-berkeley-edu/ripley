@@ -111,7 +111,9 @@ class TestUserRoles:
 class TestOptedOut:
 
     def test_opt_out_via_switch(self):
+        # _load_archival_status_view masquerades as the user, so the admin-only opt-out toggle is available.
         _load_archival_status_view(self, test.manual_teacher)
+        assert self.archival_status_page.opt_out_switch_present(test.course_site.site_id) is True
         assert self.archival_status_page.is_opted_out(test.course_site.site_id) is False
         self.archival_status_page.click_opt_out_switch(test.course_site.site_id)
         assert self.archival_status_page.is_opted_out(test.course_site.site_id) is True

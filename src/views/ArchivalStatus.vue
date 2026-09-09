@@ -33,7 +33,7 @@
           <th class="font-weight-bold px-3 py-2 text-left" scope="col">Role</th>
           <th class="font-weight-bold px-3 py-2 text-left" scope="col">Term</th>
           <th class="font-weight-bold px-3 py-2 text-left" scope="col">Removal Date</th>
-          <th class="font-weight-bold px-3 py-2 text-left" scope="col">Opted Out</th>
+          <th v-if="isMasquerading" class="font-weight-bold px-3 py-2 text-left" scope="col">Opted Out</th>
         </tr>
       </thead>
       <tbody>
@@ -62,7 +62,7 @@
           <td :id="`archival-status-removal-date-${item.canvasSiteId}`" class="align-middle px-3 py-2">
             <span aria-hidden="true" class="row-label">Removal Date:</span>{{ removalDate(item) }}
           </td>
-          <td class="align-middle px-3 py-2">
+          <td v-if="isMasquerading" class="align-middle px-3 py-2">
             <span aria-hidden="true" class="row-label">Opted Out:</span>
             <v-switch
               :id="`archival-status-opt-out-switch-${item.canvasSiteId}`"
@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {get, sortBy} from 'lodash'
 import Header1 from '@/components/utils/Header1.vue'
 import OutboundLink from '@/components/utils/OutboundLink.vue'
@@ -94,6 +94,8 @@ const contextStore = useContextStore()
 const error = ref()
 const feed = ref()
 const pendingSiteIds = ref(new Set<number>())
+// The opt-out toggle is an admin-only tool, reachable only when an admin narrows to a user's context via Canvas masquerade.
+const isMasquerading = computed(() => !!contextStore.currentUser.canvasMasqueradingUserId)
 
 onMounted(() => {
   getArchivalStatuses().then(

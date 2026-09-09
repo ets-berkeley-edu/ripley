@@ -23,6 +23,7 @@ export type RipleyConfig = {
 
 export type RipleyUser = {
   canAccessStandaloneView: boolean,
+  canvasMasqueradingUserId: number | undefined,
   canvasSiteId: number,
   canvasSiteName: string | undefined,
   inDemoMode: boolean,
@@ -40,6 +41,7 @@ const $_getDefaultApplicationState = () => ({
 
 const ANONYMOUS_USER: RipleyUser = {
   canAccessStandaloneView: false,
+  canvasMasqueradingUserId: undefined,
   canvasSiteId: NaN,
   canvasSiteName: undefined,
   inDemoMode: false,

@@ -630,24 +630,22 @@ class TestUpdateArchivalStatusOptOut:
         assert response.status_code == expected_status_code
         return response.json
 
+    @staticmethod
+    def _login_masquerading_admin(app, m, uid=None, enrollments_uri='get_enrollments_8876542_4567890'):
+        """Simulate an admin who has narrowed to a user's context via Canvas masquerade."""
+        uid = uid or teacher_uid
+        register_canvas_uris(app, {
+            'account': ['get_admins'],
+            'course': ['get_by_id_8876542', 'get_sections_8876542', enrollments_uri],
+            'user': [f'profile_{uid}'],
+        }, m)
+
     def test_anonymous(self, client):
         """Denies anonymous user."""
         self._api_update_archival_status_opt_out(client, '8876542', expected_status_code=401)
 
-    def test_reader_denied(self, client, app, fake_auth):
-        """Denies a role that cannot view archival status."""
-        with requests_mock.Mocker() as m:
-            register_canvas_uris(app, {
-                'account': ['get_admins'],
-                'course': ['get_by_id_8876542', 'get_sections_8876542', 'get_enrollments_8876542_7890123'],
-                'user': [f'profile_{reader_uid}'],
-            }, m)
-            canvas_site_id = '8876542'
-            fake_auth.login(canvas_site_id=canvas_site_id, uid=reader_uid)
-            self._api_update_archival_status_opt_out(client, canvas_site_id, expected_status_code=401)
-
-    def test_teacher_can_opt_out(self, client, app, fake_auth):
-        """Allows a Teacher to opt a course site out."""
+    def test_teacher_logged_in_as_self_denied(self, client, app, fake_auth):
+        """Denies a Teacher who is logged in as themselves rather than being masqueraded."""
         with requests_mock.Mocker() as m:
             register_canvas_uris(app, {
                 'account': ['get_admins'],
@@ -656,20 +654,36 @@ class TestUpdateArchivalStatusOptOut:
             }, m)
             canvas_site_id = '8876542'
             fake_auth.login(canvas_site_id=canvas_site_id, uid=teacher_uid)
+            self._api_update_archival_status_opt_out(client, canvas_site_id, expected_status_code=401)
+
+    def test_admin_logged_in_as_self_denied(self, client, app, fake_auth):
+        """Denies an admin who is not using Canvas masquerade."""
+        with requests_mock.Mocker() as m:
+            register_canvas_uris(app, {
+                'account': ['get_admins'],
+                'course': ['get_by_id_8876542', 'get_sections_8876542', 'get_enrollments_8876542_4567890'],
+                'user': [f'profile_{admin_uid}'],
+            }, m)
+            canvas_site_id = '8876542'
+            fake_auth.login(canvas_site_id=canvas_site_id, uid=admin_uid)
+            self._api_update_archival_status_opt_out(client, canvas_site_id, expected_status_code=401)
+
+    def test_masquerading_admin_can_opt_out(self, client, app, fake_auth):
+        """Allows an admin masquerading as a Teacher to opt a course site out."""
+        with requests_mock.Mocker() as m:
+            self._login_masquerading_admin(app, m)
+            canvas_site_id = '8876542'
+            fake_auth.login(canvas_site_id=canvas_site_id, uid=teacher_uid, canvas_masquerading_user_id=admin_uid)
             response = self._api_update_archival_status_opt_out(client, canvas_site_id, opted_out=True)
             assert response['canvasSiteId'] == int(canvas_site_id)
             assert response['optedOut'] is True
 
-    def test_ta_can_opt_back_in(self, client, app, fake_auth):
-        """Allows a TA to opt a course site back in."""
+    def test_masquerading_admin_can_opt_back_in(self, client, app, fake_auth):
+        """Allows an admin masquerading as a TA to opt a course site back in."""
         with requests_mock.Mocker() as m:
-            register_canvas_uris(app, {
-                'account': ['get_admins'],
-                'course': ['get_by_id_8876542', 'get_sections_8876542', 'get_enrollments_8876542_6789012'],
-                'user': [f'profile_{ta_uid}'],
-            }, m)
+            self._login_masquerading_admin(app, m, uid=ta_uid, enrollments_uri='get_enrollments_8876542_6789012')
             canvas_site_id = '8876542'
-            fake_auth.login(canvas_site_id=canvas_site_id, uid=ta_uid)
+            fake_auth.login(canvas_site_id=canvas_site_id, uid=ta_uid, canvas_masquerading_user_id=admin_uid)
             self._api_update_archival_status_opt_out(client, canvas_site_id, opted_out=True)
             response = self._api_update_archival_status_opt_out(client, canvas_site_id, opted_out=False)
             assert response['optedOut'] is False
@@ -677,13 +691,9 @@ class TestUpdateArchivalStatusOptOut:
     def test_requires_opted_out_param(self, client, app, fake_auth):
         """Requires the optedOut parameter."""
         with requests_mock.Mocker() as m:
-            register_canvas_uris(app, {
-                'account': ['get_admins'],
-                'course': ['get_by_id_8876542', 'get_sections_8876542', 'get_enrollments_8876542_4567890'],
-                'user': [f'profile_{teacher_uid}'],
-            }, m)
+            self._login_masquerading_admin(app, m)
             canvas_site_id = '8876542'
-            fake_auth.login(canvas_site_id=canvas_site_id, uid=teacher_uid)
+            fake_auth.login(canvas_site_id=canvas_site_id, uid=teacher_uid, canvas_masquerading_user_id=admin_uid)
             response = client.post(
                 f'/api/canvas_site/{canvas_site_id}/archival_status/opt_out',
                 data=json.dumps({}),
@@ -696,12 +706,8 @@ class TestUpdateArchivalStatusOptOut:
         canvas_site_id = '8876542'
         CanvasSiteArchivalStatus.delete(int(canvas_site_id))
         with requests_mock.Mocker() as m:
-            register_canvas_uris(app, {
-                'account': ['get_admins'],
-                'course': ['get_by_id_8876542', 'get_sections_8876542', 'get_enrollments_8876542_4567890'],
-                'user': [f'profile_{teacher_uid}'],
-            }, m)
-            fake_auth.login(canvas_site_id=canvas_site_id, uid=teacher_uid)
+            self._login_masquerading_admin(app, m)
+            fake_auth.login(canvas_site_id=canvas_site_id, uid=teacher_uid, canvas_masquerading_user_id=admin_uid)
             self._api_update_archival_status_opt_out(client, canvas_site_id, expected_status_code=404)
 
 
