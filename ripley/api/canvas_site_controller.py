@@ -28,7 +28,7 @@ from functools import wraps
 from flask import current_app as app, redirect, request
 from flask_login import current_user, login_required
 from ripley.api.errors import BadRequestError, InternalServerError, ResourceNotFoundError
-from ripley.api.util import canvas_role_required, canvas_site_creation_required, csv_download_response
+from ripley.api.util import canvas_masquerade_required, canvas_role_required, canvas_site_creation_required, csv_download_response
 from ripley.externals import canvas, data_loch
 from ripley.externals.redis import cache_dict_object, delete_cache_key, enqueue, fetch_cached_dict_object, get_job
 from ripley.lib.berkeley_course import sort_course_sections
@@ -275,7 +275,7 @@ def get_archival_status(canvas_site_id):
 
 
 @app.route('/api/canvas_site/<canvas_site_id>/archival_status/opt_out', methods=['POST'])
-@canvas_role_required(*ROLES_CAN_VIEW_ARCHIVAL_STATUS)
+@canvas_masquerade_required
 def update_archival_status_opt_out(canvas_site_id):
     params = request.get_json() or {}
     opted_out = params.get('optedOut')

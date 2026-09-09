@@ -85,6 +85,18 @@ def canvas_site_creation_required(func):
     return _canvas_site_creation_required
 
 
+def canvas_masquerade_required(func):
+    """Allow access only when an admin is acting via Canvas masquerade (Canvas restricts masquerade to admins)."""
+    @wraps(func)
+    def _canvas_masquerade_required(*args, **kw):
+        if current_user.is_authenticated and current_user.canvas_masquerading_user_id:
+            return func(*args, **kw)
+        else:
+            app.logger.warning(f'Unauthorized request to {request.path}')
+            return app.login_manager.unauthorized()
+    return _canvas_masquerade_required
+
+
 def csv_download_response(rows, filename, fieldnames=None):
     response = Response(
         content_type='text/csv',

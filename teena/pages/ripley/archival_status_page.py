@@ -64,6 +64,11 @@ class ArchivalStatusPage(RipleyPages):
     def opt_out_switch(site_id):
         return By.ID, f'archival-status-opt-out-switch-{site_id}'
 
+    def opt_out_switch_present(self, site_id):
+        # The opt-out toggle is admin-only; it appears only when an admin has narrowed to this user's
+        # context via Canvas masquerade.
+        return self.is_present(self.opt_out_switch(site_id))
+
     def is_opted_out(self, site_id):
         return self.is_el_selected(self.opt_out_switch(site_id))
 

@@ -116,11 +116,12 @@ class FakeAuth(object):
         self.app = the_app
         self.client = the_client
 
-    def login(self, canvas_site_id, uid):
+    def login(self, canvas_site_id, uid, canvas_masquerading_user_id=None):
         with override_config(self.app, 'DEV_AUTH_ENABLED', True):
             params = {
                 'canvasSiteId': canvas_site_id,
                 'uid': uid,
+                'canvasMasqueradingUserId': canvas_masquerading_user_id,
                 'password': self.app.config['DEV_AUTH_PASSWORD'],
             }
             return self.client.post(

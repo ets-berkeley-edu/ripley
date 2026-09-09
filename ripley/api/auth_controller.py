@@ -63,7 +63,7 @@ def dev_auth_login():
         uid = params.get('uid')
         app.logger.debug(f'Dev-auth login attempt by UID {uid}')
         password = params.get('password')
-        return _dev_auth_login(canvas_site_id, password, uid)
+        return _dev_auth_login(canvas_site_id, password, uid, params.get('canvasMasqueradingUserId'))
     else:
         app.logger.debug('Dev-auth attempt when DEV_AUTH_ENABLED == False.')
         raise ResourceNotFoundError('Unknown path')
@@ -130,11 +130,15 @@ def _cas_client(target_url=None):
     return cas.CASClientV3(server_url=cas_server, service_url=service_url)
 
 
-def _dev_auth_login(canvas_site_id, password, uid):
+def _dev_auth_login(canvas_site_id, password, uid, canvas_masquerading_user_id=None):
     if password != app.config['DEV_AUTH_PASSWORD']:
         app.logger.debug(f'UID {uid} failed dev-auth login: bad password.')
         return tolerant_jsonify({'message': 'Invalid credentials'}, 401)
-    return _start_login_session(canvas_site_id=canvas_site_id, uid=uid)
+    return _start_login_session(
+        canvas_site_id=canvas_site_id,
+        uid=uid,
+        canvas_masquerading_user_id=canvas_masquerading_user_id,
+    )
 
 
 def _get_custom_param(lti_data, key):
@@ -142,8 +146,12 @@ def _get_custom_param(lti_data, key):
     return value if value and value.isnumeric() else None
 
 
-def _start_login_session(uid, canvas_site_id=None, redirect_path=None):
-    user_id = User.get_serialized_composite_key(canvas_site_id=canvas_site_id, uid=uid)
+def _start_login_session(uid, canvas_site_id=None, redirect_path=None, canvas_masquerading_user_id=None):
+    user_id = User.get_serialized_composite_key(
+        canvas_site_id=canvas_site_id,
+        uid=uid,
+        canvas_masquerading_user_id=canvas_masquerading_user_id,
+    )
     user = User(user_id)
     error = None
     if not user.is_authenticated:

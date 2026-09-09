@@ -5,8 +5,8 @@ export function becomeUser(canvasSiteId: number, uid: string) {
   return utils.post('/api/auth/become_user', {canvasSiteId, uid}, true)
 }
 
-export function devAuthLogIn(canvasSiteId: string, uid: string, password: string) {
-  return utils.post('/api/auth/dev_auth', {canvasSiteId, password, uid}, false)
+export function devAuthLogIn(canvasSiteId: string, uid: string, password: string, canvasMasqueradingUserId?: string) {
+  return utils.post('/api/auth/dev_auth', {canvasMasqueradingUserId, canvasSiteId, password, uid}, false)
 }
 
 export function getCasLoginURL() {
