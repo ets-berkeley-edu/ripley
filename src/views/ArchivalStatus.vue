@@ -7,7 +7,7 @@
       <b v-if="!feed.length" id="archival-status-no-courses">You have no courses or project sites currently scheduled for removal.</b>
     </p>
     <p class="my-4">
-      The list is updated on a weekly basis and may not display accurate information about recently exempted courses or project sites.
+      The list is updated on a daily basis and may not display accurate information about exempted project sites with recent user activity.
     </p>
     <p class="my-4">
       To learn how to preserve your work and student records or request an opt-out, review the <OutboundLink href="https://berkeley.service-now.com/kb?id=kb_article_view&sysparm_article=KB0012071">bCourses data retention policy knowledge base articles</OutboundLink>.
