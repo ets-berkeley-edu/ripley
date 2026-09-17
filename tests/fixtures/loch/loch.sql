@@ -700,3 +700,28 @@ INSERT INTO boac_advising_asc.students
 VALUES
 ('3000000012',TRUE),
 ('3000000013',TRUE);
+
+DROP SCHEMA IF EXISTS canvas_data cascade;
+
+CREATE SCHEMA canvas_data;
+
+CREATE TABLE canvas_data.course_sites
+(
+    id VARCHAR NOT NULL PRIMARY KEY,
+    account_id VARCHAR,
+    sis_term_id VARCHAR,
+    sis_course_id VARCHAR,
+    course_code VARCHAR,
+    name VARCHAR,
+    workflow_state VARCHAR,
+    last_activity TIMESTAMP,
+    created_at TIMESTAMP
+);
+
+INSERT INTO canvas_data.course_sites
+(id, account_id, sis_term_id, sis_course_id, course_code, name, workflow_state, last_activity, created_at)
+VALUES
+('1234567', '129407', NULL, NULL, 'Nostromo Project', 'Nostromo Project', 'available', now() - interval '2 days', now() - interval '400 days'),
+('2345678', '129407', NULL, NULL, 'Sulaco Project', 'Sulaco Project', 'available', now() - interval '400 days', now() - interval '600 days'),
+('3456789', '129407', NULL, NULL, 'Sevastopol Project', 'Sevastopol Project', 'deleted', now() - interval '2 days', now() - interval '400 days'),
+('4567890', '1', '2232', '876543', 'ANTHRO 189', 'ANTHRO 189', 'available', now() - interval '2 days', now() - interval '400 days');

@@ -119,6 +119,21 @@ def get_users(uids=None):
     return safe_execute_rds(sql)
 
 
+# Query to identify project sites (Canvas course sites under the project sites account) with activity
+# more recent than the configured archival activity window.
+def get_recently_active_project_sites():
+    params = {
+        'account_id': str(app.config['CANVAS_PROJECTS_ACCOUNT_ID']),
+        'activity_window_days': app.config['CANVAS_SITE_ARCHIVAL_ACTIVITY_WINDOW_DAYS'],
+    }
+    sql = """SELECT id, last_activity
+        FROM canvas_data.course_sites
+        WHERE account_id = %(account_id)s
+        AND workflow_state != 'deleted'
+        AND last_activity > (now() - (%(activity_window_days)s * INTERVAL '1 day'))"""
+    return safe_execute_rds(sql, **params)
+
+
 def get_current_term():
     params = {'today': util.local_today()}
     rows = safe_execute_rds('SELECT * FROM terms.term_definitions WHERE term_ends >= %(today)s ORDER BY term_ends LIMIT 1', **params)

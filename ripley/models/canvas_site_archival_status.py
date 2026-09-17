@@ -58,6 +58,12 @@ class CanvasSiteArchivalStatus(Base):
             std_commit()
 
     @classmethod
+    def delete_by_canvas_site_ids(cls, canvas_site_ids):
+        count = cls.query.filter(cls.canvas_site_id.in_(canvas_site_ids)).delete(synchronize_session=False)
+        std_commit()
+        return count
+
+    @classmethod
     def add_opt_out(cls, canvas_site_id):
         archival_status = cls.query.filter_by(canvas_site_id=canvas_site_id).first()
         if archival_status:
