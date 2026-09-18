@@ -25,4 +25,4 @@
 
 INSERT INTO jobs (disabled, job_schedule_type, job_schedule_value, key, created_at, updated_at)
 VALUES
-(TRUE, 'day_at', '02:00', 'bcourses_update_archival_status', now(), now());
+(TRUE, 'day_at', '02:00', 'update_archival_status', now(), now());
