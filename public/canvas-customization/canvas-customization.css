@@ -74,6 +74,77 @@ form#ui-id-2[data-view='createUsers'] {
   text-align: right;
 }
 
+/* FERPA COMPLIANCE REMINDER */
+
+.ferpa-reminder-overlay {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 10000;
+}
+
+.ferpa-reminder-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 470px;
+  padding: 24px;
+  width: 90%;
+}
+
+.ferpa-reminder-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ferpa-reminder-icon {
+  color: #e6a700;
+  flex-shrink: 0;
+  line-height: 0;
+  margin-top: 2px;
+}
+
+.ferpa-reminder-title {
+  color: #2d3b45;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.ferpa-reminder-body {
+  color: #2d3b45;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.ferpa-reminder-body a {
+  color: #0374b5;
+  text-decoration: underline;
+}
+
+.ferpa-reminder-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ferpa-reminder-actions .btn-primary {
+  background-color: #0374b5;
+  border-color: #0374b5;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
 /* HELP */
 
 /* Hide unnecessary Help links */

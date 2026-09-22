@@ -72,6 +72,17 @@ def can_user_create_site():
     return tolerant_jsonify({'canCreateSite': can_create})
 
 
+@app.route('/api/canvas/ferpa_reminder')
+def get_ferpa_reminder():
+    # Used by canvas-customization.js
+    return tolerant_jsonify({
+        'buttonLabel': app.config['FERPA_REMINDER_BUTTON_LABEL'],
+        'enabled': app.config['FERPA_REMINDER_ENABLED'],
+        'html': app.config['FERPA_REMINDER_HTML'],
+        'title': app.config['FERPA_REMINDER_TITLE'],
+    })
+
+
 @app.route('/api/canvas/import_users', methods=['POST'])
 @login_required
 def provision_users():
