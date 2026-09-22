@@ -18,7 +18,7 @@ INSERT INTO sis_data.basic_attributes
 (ldap_uid, sid, first_name, last_name, email_address, affiliations, person_type, pronouns)
 VALUES
 ('10000', '30010000', 'Ellen', 'Ripley', 'ellen.ripley@berkeley.edu', 'EMPLOYEE-TYPE-ACADEMIC', 'S', 'she/her'),
-('10001', '30010001', 'Dallas', '👨‍✈️', 'dallas@berkeley.edu', 'EMPLOYEE-TYPE-STAFF', 'S', 'he/him'),
+('10001', NULL, 'Dallas', '👨‍✈️', 'dallas@berkeley.edu', 'EMPLOYEE-TYPE-STAFF', 'S', 'he/him'),
 ('20000', '30020000', 'Joan', 'Lambert', 'joan.lambert@berkeley.edu', 'STUDENT-TYPE-REGISTERED', 'S', 'she/her'),
 ('30000', '30030000', 'Ash', '🤖', 'synthetic.ash@berkeley.edu', 'STUDENT-TYPE-NOT REGISTERED', 'S', 'they/them'),
 ('40000', '30040000', 'XO', 'Kane', 'xo.kane@berkeley.edu', 'STUDENT-TYPE-REGISTERED', 'S', 'he/him'),

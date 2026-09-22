@@ -190,11 +190,4 @@ def user_import_csv_fields():
 
 
 def user_id_from_attributes(attributes):
-    if (
-        attributes['sid']
-        and attributes['affiliations']
-        and ('STUDENT-TYPE-REGISTERED' in attributes['affiliations'] or 'STUDENT-TYPE-NOT REGISTERED' in attributes['affiliations'])
-    ):
-        return attributes['sid']
-    else:
-        return f"UID:{attributes['ldap_uid']}"
+    return attributes['sid'] or f"UID:{attributes['ldap_uid']}"
