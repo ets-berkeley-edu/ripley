@@ -382,6 +382,140 @@ addCourseRetentionPolicyBanner();
 
   addEGrades();
 
+  /* FERPA Notification for Grade Export */
+
+  var ferpaReminderConfig = null;
+  var ferpaReminderPreviousFocus = null;
+
+  var FERPA_FOCUSABLE_SELECTOR = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+  ].join(', ');
+
+  var FERPA_EXPORT_STABLE_SELECTOR = '#gradebook-export-button, [data-testid="gradebook-export-button"]';
+
+  var isGradebookExportTrigger = function(target) {
+    var $trigger = $(target).closest(FERPA_EXPORT_STABLE_SELECTOR + ', [role="menuitem"]');
+    if (!$trigger.length) {
+      return false;
+    }
+    if ($trigger.is('[aria-haspopup], [aria-expanded]')) {
+      return false;
+    }
+    if ($trigger.is(FERPA_EXPORT_STABLE_SELECTOR)) {
+      return true;
+    }
+    // Canvas may prefix the visible label with a screen-reader-only span; ignore it when matching.
+    var $label = $trigger.clone();
+    $label.find('.screenreader-only, .sr-only, .screenReaderContent').remove();
+    return /^export/i.test($label.text().trim());
+  };
+
+  /**
+   * Dismiss the FERPA reminder modal and restore focus
+   */
+  var hideFerpaReminder = function() {
+    var $modal = $('#ferpa-compliance-modal');
+    if ($modal.length) {
+      $modal.remove();
+    }
+    $(document).off('keydown.ferpaReminder');
+    if (ferpaReminderPreviousFocus && ferpaReminderPreviousFocus.focus) {
+      ferpaReminderPreviousFocus.focus();
+    }
+    ferpaReminderPreviousFocus = null;
+  };
+
+  /**
+   * Show the FERPA Data Compliance Reminder modal
+   */
+  var showFerpaReminder = function() {
+    if (!ferpaReminderConfig || !ferpaReminderConfig.enabled || $('#ferpa-compliance-modal').length) {
+      return;
+    }
+    ferpaReminderPreviousFocus = document.activeElement;
+    var title = ferpaReminderConfig.title || 'FERPA Data Compliance Reminder';
+    var buttonLabel = ferpaReminderConfig.buttonLabel || 'I Understand';
+    var bodyHtml = ferpaReminderConfig.html || '';
+    var modalHtml = [
+      '<div id="ferpa-compliance-modal" class="ferpa-reminder-overlay" role="alertdialog"',
+      '  aria-modal="true" aria-labelledby="ferpa-reminder-title" aria-describedby="ferpa-reminder-body">',
+      '  <div class="ferpa-reminder-card">',
+      '    <div class="ferpa-reminder-header">',
+      '      <span class="ferpa-reminder-icon" aria-hidden="true">',
+      '        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">',
+      '          <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+      '        </svg>',
+      '      </span>',
+      '      <h2 id="ferpa-reminder-title" class="ferpa-reminder-title">' + $('<div/>').text(title).html() + '</h2>',
+      '    </div>',
+      '    <div id="ferpa-reminder-body" class="ferpa-reminder-body">' + bodyHtml + '</div>',
+      '    <div class="ferpa-reminder-actions">',
+      '      <button type="button" id="ferpa-reminder-dismiss" class="btn btn-primary">' + $('<div/>').text(buttonLabel).html() + '</button>',
+      '    </div>',
+      '  </div>',
+      '</div>'
+    ].join('');
+    $('body').append(modalHtml);
+    $('#ferpa-reminder-dismiss').on('click', hideFerpaReminder);
+    $(document).on('keydown.ferpaReminder', function(ev) {
+      if (ev.key === 'Escape' || ev.keyCode === 27) {
+        hideFerpaReminder();
+        return;
+      }
+      if (ev.key !== 'Tab' && ev.keyCode !== 9) {
+        return;
+      }
+      var modal = $('#ferpa-compliance-modal')[0];
+      if (!modal) {
+        return;
+      }
+      var $focusable = $(modal).find(FERPA_FOCUSABLE_SELECTOR).filter(':visible');
+      if (!$focusable.length) {
+        return;
+      }
+      var first = $focusable.first()[0];
+      var last = $focusable.last()[0];
+      var active = document.activeElement;
+      var isInsideModal = active && $.contains(modal, active);
+      if (ev.shiftKey) {
+        if (!isInsideModal || active === first) {
+          ev.preventDefault();
+          last.focus();
+        }
+      } else if (!isInsideModal || active === last) {
+        ev.preventDefault();
+        first.focus();
+      }
+    });
+    $('#ferpa-reminder-dismiss').focus();
+  };
+
+  /**
+   * Prefetch FERPA reminder config and listen for gradebook export clicks
+   */
+  var addFerpaReminder = function() {
+    if (!(window.ENV && window.ENV.GRADEBOOK_OPTIONS && window.ENV.GRADEBOOK_OPTIONS.context_id)) {
+      return;
+    }
+    apiRequest('/api/canvas/ferpa_reminder', function(response) {
+      if (response && response.enabled) {
+        ferpaReminderConfig = response;
+        document.addEventListener('click', function(event) {
+          if (isGradebookExportTrigger(event.target)) {
+            showFerpaReminder();
+          }
+        });
+      }
+    });
+  };
+
+  addFerpaReminder();
+
   /* ADD PEOPLE */
 
   var customizations = function() {
@@ -744,7 +878,7 @@ addCourseRetentionPolicyBanner();
 
       });
     };
-    
+
     addProfilePronounInfo();
 
   /* 404 PAGE */

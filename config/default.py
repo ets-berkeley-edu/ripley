@@ -83,6 +83,17 @@ DISPLAY_COURSE_RETENTION_POLICY_BANNER = False
 
 EXTERNAL_TOOLS_CACHE_EXPIRES_IN_SECONDS = 1800
 
+FERPA_REMINDER_ENABLED = True
+FERPA_REMINDER_TITLE = 'FERPA Data Compliance Reminder'
+FERPA_REMINDER_BUTTON_LABEL = 'I Understand'
+FERPA_REMINDER_HTML = """
+  When exporting gradebook data, please follow <a href="https://registrar.berkeley.edu/ferpa-privacy-disclosure"
+  target="_blank">FERPA compliance guidelines</a> for student records. Use
+  <a href="https://berkeley.service-now.com/kb/en?id=kb_article_view&amp;sysparm_article=KB0011095"
+  target="_blank">UC Berkeley's secure file storage platforms</a> to store files. Do not store unprotected
+  gradebook files on non-secure or public drives.
+"""
+
 # Directory to search for mock fixtures, if running in "test" or "demo" mode.
 FIXTURES_PATH = None
 

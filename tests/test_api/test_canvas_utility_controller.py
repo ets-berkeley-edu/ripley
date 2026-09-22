@@ -48,6 +48,19 @@ class TestExternalTools:
             assert 'Download E-Grades' in api_json.get('officialCourseTools', {})
 
 
+class TestFerpaReminder:
+
+    def test_anonymous(self, client, app):
+        response = client.get('api/canvas/ferpa_reminder')
+        assert response.status_code == 200
+        api_json = response.json
+        assert api_json['enabled'] is True
+        assert api_json['title'] == app.config['FERPA_REMINDER_TITLE']
+        assert api_json['buttonLabel'] == app.config['FERPA_REMINDER_BUTTON_LABEL']
+        assert api_json['html'] == app.config['FERPA_REMINDER_HTML']
+        assert 'FERPA compliance guidelines' in api_json['html']
+
+
 class TestSiteCreationAuthorization:
 
     def test_ripley_creation(self, client, app):
