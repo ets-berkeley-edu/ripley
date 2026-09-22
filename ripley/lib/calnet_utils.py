@@ -69,7 +69,7 @@ def get_calnet_attributes_for_uids(app, uids):
     def _transform_user(user):
         return {
             'ldap_uid': safe_str(user['uid']),
-            'sid': safe_str(user['sid'] or user['csid']),
+            'sid': safe_str(user['sid']),
             'first_name': user['firstName'],
             'last_name': user['lastName'],
             'email_address': user['email'],
