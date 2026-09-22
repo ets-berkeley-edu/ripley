@@ -29,7 +29,7 @@ from ripley.jobs.base_job import BaseJob
 from ripley.models.canvas_site_archival_status import CanvasSiteArchivalStatus
 
 
-class BcoursesUpdateArchivalStatusJob(BaseJob):
+class UpdateArchivalStatusJob(BaseJob):
 
     def _run(self, params={}):
         active_site_ids = [int(row['id']) for row in get_recently_active_project_sites()]
@@ -49,4 +49,4 @@ class BcoursesUpdateArchivalStatusJob(BaseJob):
 
     @classmethod
     def key(cls):
-        return 'bcourses_update_archival_status'
+        return 'update_archival_status'
