@@ -72,7 +72,7 @@ class TestFooterCustomizations:
         assert self.canvas_page.is_external_link_valid(self.canvas_page.STUDENT_RESOURCES_LINK, title)
 
     def test_link_accessibility(self):
-        title = 'bCourses Accessibility | Research, Teaching, & Learning'
+        title = 'Accessible bCourses Sites | Research, Teaching, & Learning'
         assert self.canvas_page.is_external_link_valid(self.canvas_page.ACCESSIBILITY_LINK, title)
 
     def test_link_nondiscrimination(self):
